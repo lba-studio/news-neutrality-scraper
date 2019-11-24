@@ -1,0 +1,25 @@
+{
+  "name": "nodescrape",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "natural": "^0.6.3",
+    "puppeteer": "^2.0.0",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.14",
+    "@types/puppeteer": "^2.0.0"
+  },
+  "scripts": {
+    "start": "ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
