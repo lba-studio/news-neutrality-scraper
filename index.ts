@@ -55,7 +55,8 @@ async function handler() {
   let page = await puppeteerInstance.newPage();
   let avgScore: number | undefined = undefined;
   while (pageNumber <= maxPage) {
-    console.debug(`Total pages: ${(await puppeteerInstance.pages()).length}`)
+    let pages = await puppeteerInstance.pages();
+    console.debug(`Total pages: ${pages.length}`)
     console.debug(`Loading search page number ${pageNumber}.`);
     let content: string = await loadSearchResultsContent(page, pageNumber);
     let linksToExplore: Array<string> = extractLinksToExplore(content);
