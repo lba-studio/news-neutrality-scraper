@@ -41,27 +41,27 @@ async function retrieveMainTextFromArticleLink(puppeteerInstance: puppeteer.Brow
 
 export const AbcNewsService: NewsService = {
   getNewsObservable: () => new Observable(subscriber => {
-    const maxPage = 100;
-    let pageNumber = 1; // starts at 1 lol
-    let puppeteerInstance: puppeteer.Browser = await puppeteer.launch();
-    let page = await puppeteerInstance.newPage();
-    let avgScore: number | undefined = undefined;
-    while (pageNumber <= maxPage) {
-      let pages = await puppeteerInstance.pages();
-      console.debug(`Total pages: ${pages.length}`)
-      console.debug(`Loading search page number ${pageNumber}.`);
-      let content: string = await loadSearchResultsContent(page, pageNumber);
-      let linksToExplore: Array<string> = extractLinksToExplore(content);
-      console.log('Extracted the following links:', linksToExplore);
-      await Promise.all(linksToExplore.map(link => retrieveMainTextFromArticleLink(puppeteerInstance, link)
-        .then(mainText => mainText ? subscriber.next({
-          content: mainText
-        }) : undefined)
-      ));
-      pageNumber += 1;
-    }
-    puppeteerInstance.close();
-    subscriber.complete();
+    (async () => {
+      const maxPage = 100;
+      let pageNumber = 1; // starts at 1 lol
+      let puppeteerInstance: puppeteer.Browser = await puppeteer.launch();
+      let page = await puppeteerInstance.newPage();
+      while (pageNumber <= maxPage) {
+        let pages = await puppeteerInstance.pages();
+        console.debug(`Total pages: ${pages.length}`)
+        console.debug(`Loading search page number ${pageNumber}.`);
+        let content: string = await loadSearchResultsContent(page, pageNumber);
+        let linksToExplore: Array<string> = extractLinksToExplore(content);
+        console.log('Extracted the following links:', linksToExplore);
+        await Promise.all(linksToExplore.map(link => retrieveMainTextFromArticleLink(puppeteerInstance, link)
+          .then(mainText => mainText ? subscriber.next({
+            content: mainText
+          }) : undefined)
+        ));
+        pageNumber += 1;
+      }
+      puppeteerInstance.close();
+      subscriber.complete();
+    })();
   })
-  
 }
