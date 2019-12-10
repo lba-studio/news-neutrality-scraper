@@ -2,6 +2,7 @@ import { NewsService, News } from "./news.service";
 import { Observable } from 'rxjs';
 import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
+import { logger } from "../../utils/logger.util";
 
 async function loadSearchResultsContent(page: puppeteer.Page, pageNumber: number): Promise<string> {
   const url = `https://search-beta.abc.net.au/#/?query=commonwealth%20bank&page=${pageNumber}&configure%5BgetRankingInfo%5D=true&sortBy=ABC_production_all_latest&refinementList%5Bsite.title%5D%5B0%5D=ABC%20News`;
@@ -17,7 +18,7 @@ function extractLinksToExplore(htmlContent: string): Array<string> {
 }
 
 async function retrieveMainTextFromArticleLink(puppeteerInstance: puppeteer.Browser, href: string): Promise<string | undefined> {
-  console.debug(`Retrieving href ${href}`);
+  logger.debug(`Retrieving href ${href}`);
   if (href.match(/.*\/news\/programs\/.*/)) {
     return undefined;
   }
@@ -32,7 +33,7 @@ async function retrieveMainTextFromArticleLink(puppeteerInstance: puppeteer.Brow
         mainText += `${$(e).text()}\n`;
       });
   });
-  console.debug(`Finished retrieval of href ${href}`);
+  logger.debug(`Finished retrieval of href ${href}`);
   // console.log(mainText);
   mainText = mainText.toLowerCase();
   await page.close();
@@ -42,17 +43,17 @@ async function retrieveMainTextFromArticleLink(puppeteerInstance: puppeteer.Brow
 export const AbcNewsService: NewsService = {
   getNewsObservable: () => new Observable(subscriber => {
     (async () => {
-      const maxPage = 100;
+      const maxPage = 2;
       let pageNumber = 1; // starts at 1 lol
       let puppeteerInstance: puppeteer.Browser = await puppeteer.launch();
       let page = await puppeteerInstance.newPage();
       while (pageNumber <= maxPage) {
         let pages = await puppeteerInstance.pages();
-        console.debug(`Total pages: ${pages.length}`)
-        console.debug(`Loading search page number ${pageNumber}.`);
+        logger.debug(`Total pages: ${pages.length}`)
+        logger.debug(`Loading search page number ${pageNumber}.`);
         let content: string = await loadSearchResultsContent(page, pageNumber);
         let linksToExplore: Array<string> = extractLinksToExplore(content);
-        console.log('Extracted the following links:', linksToExplore);
+        logger.info('Extracted the following links:', linksToExplore);
         await Promise.all(linksToExplore.map(link => retrieveMainTextFromArticleLink(puppeteerInstance, link)
           .then(mainText => mainText ? subscriber.next({
             content: mainText
