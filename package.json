@@ -19,7 +19,7 @@
     "@types/puppeteer": "^2.0.0"
   },
   "scripts": {
-    "scrape": "ts-node calculate-neutrality.ts",
+    "scrape": "ts-node -r dotenv/config calculate-neutrality.ts",
     "start": "npm run scrape",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
