@@ -18,4 +18,4 @@ async function handler() {
   });
 }
 
-handler().then(() => logger.info('Finished!'));
+handler().then(() => logger.info('Finished!')).catch(e => logger.error(e));
