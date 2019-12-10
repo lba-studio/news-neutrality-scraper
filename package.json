@@ -11,7 +11,8 @@
     "puppeteer": "^2.0.0",
     "rxjs": "^6.5.3",
     "ts-node": "^8.5.2",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.2",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.14",
