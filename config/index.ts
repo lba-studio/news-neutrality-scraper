@@ -9,6 +9,7 @@ function getEnv(envVarKey: string): string {
 const config = {
   newsApi: {
     apiKey: getEnv('NEWS_API_APIKEY'),
+    url: getEnv('NEWS_API_URL'),
   }
 }
 
