@@ -36,7 +36,7 @@ export async function getNewsFromSource(source: string): Promise<NewsApiResponse
   return await axios.get(url + '/everything', {
     params: {
       apiKey: apiKey,
-      sources: sources.join(','), // TODO remove this
+      sources: source,
     }
   }).then(handleErrorStatusCode)
   .then(resp => resp.data);
