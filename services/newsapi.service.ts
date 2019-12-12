@@ -19,9 +19,6 @@ interface NewsApiArticle {
   url: string;
 };
 
-const sources = [ // TODO get rid of this
-  'abc-news-au',
-];
 const url = config.newsApi.url;
 const apiKey = config.newsApi.apiKey;
 
@@ -32,11 +29,11 @@ function handleErrorStatusCode(resp: AxiosResponse): AxiosResponse {
   return resp;
 }
 
-export async function getNewsFromSource(source: string): Promise<NewsApiResponse> {
+export async function getNewsFromSource(sources: Array<string>): Promise<NewsApiResponse> {
   return await axios.get(url + '/everything', {
     params: {
       apiKey: apiKey,
-      sources: source,
+      sources: sources.join(','),
     }
   }).then(handleErrorStatusCode)
   .then(resp => resp.data);
