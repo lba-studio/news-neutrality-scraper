@@ -53,7 +53,7 @@ export const AbcNewsService: NewsService = {
         logger.debug(`Loading search page number ${pageNumber}.`);
         let content: string = await loadSearchResultsContent(page, pageNumber);
         let linksToExplore: Array<string> = extractLinksToExplore(content);
-        logger.info('Extracted the following links:', linksToExplore);
+        logger.debug('Extracted the following links:', linksToExplore);
         await Promise.all(linksToExplore.map(link => retrieveMainTextFromArticleLink(puppeteerInstance, link)
           .then(mainText => mainText ? subscriber.next({
             content: mainText
