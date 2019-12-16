@@ -47,12 +47,12 @@ export async function getNewsFromSource(params?: NewsApiQueryParam): Promise<New
       'Authorization': apiKey,
     },
   }).then(resp => resp.data)
-  .catch(e => {
-    if (e.response) {
-      logger.error(e.response.data);
-    }
-    throw e;
-  });
+    .catch(e => {
+      if (e.response) {
+        logger.error(e.response.data);
+      }
+      throw e;
+    });
 }
 
 export function getNewsApiObservableForDomains(domains: Array<string>): Observable<News> {
@@ -67,10 +67,16 @@ export function getNewsApiObservableForDomains(domains: Array<string>): Observab
           page: pageNumber++,
           pageSize: pageSize,
         });
-        data.articles.forEach(article => subscriber.next({
-          content: article.description,
-          title: article.title,
-        }));
+        data.articles.forEach(article => {
+          if (!article.description || !article.title) {
+            console.dir(article, { depth: null })
+            throw new Error(`Empty description or title for domain ${domains.toString()}!`);
+          }
+          subscriber.next({
+            content: article.description,
+            title: article.title,
+          });
+        });
       } while (data.articles.length > 0 && pageNumber * pageSize <= pageLimit)
     })().then(() => subscriber.complete());
   });

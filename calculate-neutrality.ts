@@ -14,6 +14,9 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   let avgScore: number | undefined = undefined;
   let counter = 0;
   await newsService.getNewsObservable().forEach((news: News) => {
+    if (!news.content) {
+      return;
+    }
     let score = analyzeText(news.content);
     if (avgScore === undefined) {
       avgScore = score;
