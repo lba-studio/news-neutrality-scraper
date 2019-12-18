@@ -3,12 +3,14 @@ import { AbcNewsService } from "./services/news/abcnews.service";
 import { News, NewsService } from "./services/news/news.service";
 import { logger } from './utils/logger.util';
 import config from "./config";
-import { craftNewsService } from "./services/newsapi.service";
+import { craftNewsService, NewsApiService, NewsApiSource } from "./services/newsapi.service";
 
-const domainsToLookFor = [
-  // 'abc.net.au',
-  'foxnews.com',
-];
+// const domainsToLookFor = [
+//   // 'abc.net.au',
+//   // 'foxnews.com',
+//   // 'bloomberg.com', CONTENT NOT AVAILABLE
+//   'buzzfeed.com',
+// ];
 
 async function retrieveScoreFromNewsService(newsService: NewsService): Promise<number | undefined> {
   let avgScore: number | undefined = undefined;
@@ -30,10 +32,12 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
 }
 
 async function handler() {
-  logger.info(config.newsApi.apiKey);
-  await Promise.all(domainsToLookFor.map(async domain => {
-    let score = await retrieveScoreFromNewsService(craftNewsService([domain]));
-    logger.info(`Domain: ${domain} | Score: ${score}`)
+  let sources: Array<NewsApiSource> = await NewsApiService.getSources();
+  let sourcesToLookFor = sources.filter(source => source.language === 'en');
+  await Promise.all(sourcesToLookFor.map(async source => {
+    let sourceId = source.id;
+    let score = await retrieveScoreFromNewsService(craftNewsService([sourceId]));
+    logger.info(`Domain: ${source.url} | ${source.id} | Score: ${score}`)
   }));
 }
 

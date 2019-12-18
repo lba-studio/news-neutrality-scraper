@@ -22,6 +22,15 @@ export interface NewsApiArticle {
   url: string;
 };
 
+export interface NewsApiSource {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  country: string;
+  language: string;
+};
+
 interface NewsApiQueryParam {
   domains?: string; // delimited by ,
   sources?: string; // delimited by ,
@@ -55,7 +64,7 @@ export async function getNewsFromSource(params?: NewsApiQueryParam): Promise<New
     });
 }
 
-export function getNewsApiObservableForDomains(domains: Array<string>): Observable<News> {
+export function getNewsApiObservableForDomains(sources: Array<string>): Observable<News> {
   return new Observable(subscriber => {
     (async () => {
       let data: NewsApiResponse;
@@ -63,14 +72,14 @@ export function getNewsApiObservableForDomains(domains: Array<string>): Observab
       const pageSize = 100;
       do {
         data = await NewsApiService.getNewsFromSource({
-          domains: domains.join(','),
+          sources: sources.join(','),
           page: pageNumber++,
           pageSize: pageSize,
         });
         data.articles.forEach(article => {
           if (!article.description || !article.title) {
             console.dir(article, { depth: null })
-            throw new Error(`Empty description or title for domain ${domains.toString()}!`);
+            throw new Error(`Empty description or title for source ${sources.toString()}!`);
           }
           subscriber.next({
             content: article.description,
@@ -82,10 +91,31 @@ export function getNewsApiObservableForDomains(domains: Array<string>): Observab
   });
 }
 
-export function craftNewsService(domains: Array<string>): NewsService {
+export function craftNewsService(sources: Array<string>): NewsService {
   return {
-    getNewsObservable: () => getNewsApiObservableForDomains(domains),
+    getNewsObservable: () => getNewsApiObservableForDomains(sources),
   };
 }
 
-export const NewsApiService = { getNewsFromSource, getNewsApiObservableForDomains };
+export async function getSources(country?: string): Promise<Array<NewsApiSource>> {
+  return await axios.get(url + '/sources', {
+    params: {
+      country: country
+    },
+    headers: {
+      'Authorization': apiKey,
+    },
+  }).then(resp => {
+    if (!resp.data.sources) {
+      throw new NewsApiError('Unable to retrieve sources.');
+    }
+    return resp.data.sources;
+  }).catch(e => {
+    if (e.response) {
+      logger.error(e.response.data);
+    }
+    throw e;
+  });
+}
+
+export const NewsApiService = { getNewsFromSource, getNewsApiObservableForDomains, getSources };

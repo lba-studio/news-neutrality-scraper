@@ -11,7 +11,7 @@ const config = {
     apiKey: getEnv('NEWS_API_APIKEY'),
     url: getEnv('NEWS_API_URL'),
     pageLimit: 100,
-  }
+  },
 }
 
 export default config;
