@@ -4,13 +4,14 @@ import { baseDynamoDbClient } from "./clients/dynamodb.client";
 
 async function initDynamoDb() {
   logger.info('Initialising DynamoDB table...');
-  await baseDynamoDbClient.createTable(NewsSourcesSchema).promise()
+  await baseDynamoDbClient.createTable(NewsSourcesSchema).promise();
 }
 
 async function main() {
   await initDynamoDb();
+  logger.info('Init done!');
 }
 
 main()
   .then(() => logger.info('Initialization completed.'))
-  .catch(e => logger.error(e));
+  .catch(e => logger.error(e) && process.exit(1));

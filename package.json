@@ -22,7 +22,8 @@
   "scripts": {
     "scrape": "ts-node -r dotenv/config calculate-neutrality.ts",
     "start": "npm run scrape",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "ts-node -r dotenv/config init.ts"
   },
   "author": "",
   "license": "ISC"

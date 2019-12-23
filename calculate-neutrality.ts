@@ -34,6 +34,12 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
 async function handler() {
   let sources: Array<NewsApiSource> = await NewsApiService.getSources();
   let sourcesToLookFor = sources.filter(source => source.language === 'en');
+  if (true) {
+    const sourceLimit = 5;
+    logger.info(`Limiting source to ${sourceLimit}.`);
+    sourcesToLookFor = sourcesToLookFor.slice(0, Math.max(sourceLimit, sourcesToLookFor.length));
+
+  }
   await Promise.all(sourcesToLookFor.map(async source => {
     let sourceId = source.id;
     let score = await retrieveScoreFromNewsService(craftNewsService([sourceId]));
