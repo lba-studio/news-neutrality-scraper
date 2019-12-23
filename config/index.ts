@@ -12,6 +12,12 @@ const config = {
     url: getEnv('NEWS_API_URL'),
     pageLimit: 100,
   },
+  db: {
+    tableNames: {
+      newsSources: 'NewsSourcesAndScore',
+    },
+    localEndpoint: process.env.NODESCRAPE_LOCAL_ENDPOINT,
+  }
 }
 
 export default config;
