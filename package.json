@@ -8,6 +8,7 @@
     "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "natural": "^0.6.3",
     "puppeteer": "^2.0.0",
     "rxjs": "^6.5.3",
@@ -17,13 +18,15 @@
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.14",
+    "@types/express": "^4.17.2",
     "@types/puppeteer": "^2.0.0"
   },
   "scripts": {
     "scrape": "ts-node -r dotenv/config calculate-neutrality.ts",
     "start": "npm run scrape",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prestart": "ts-node -r dotenv/config init.ts"
+    "prestart": "ts-node -r dotenv/config init.ts",
+    "start-api": "ts-node -r dotenv/config api.ts"
   },
   "author": "",
   "license": "ISC"
