@@ -3,7 +3,8 @@ import { AbcNewsService } from "./services/news/abcnews.service";
 import { News, NewsService } from "./services/news/news.service";
 import { logger } from './utils/logger.util';
 import config from "./config";
-import { craftNewsService, NewsApiService, NewsApiSource } from "./services/newsapi.service";
+import { craftNewsServiceFromNewsApiSources, NewsApiService, NewsApiSource } from "./services/newsapi.service";
+import { NewsSourceRepository } from "./repositories/news-sources.repository";
 
 // const domainsToLookFor = [
 //   // 'abc.net.au',
@@ -35,15 +36,23 @@ async function handler() {
   let sources: Array<NewsApiSource> = await NewsApiService.getSources();
   let sourcesToLookFor = sources.filter(source => source.language === 'en');
   if (true) {
-    const sourceLimit = 5;
+    const sourceLimit = 1;
     logger.info(`Limiting source to ${sourceLimit}.`);
-    sourcesToLookFor = sourcesToLookFor.slice(0, Math.max(sourceLimit, sourcesToLookFor.length));
-
+    sourcesToLookFor = sourcesToLookFor.slice(0, Math.min(sourceLimit, sourcesToLookFor.length));
   }
   await Promise.all(sourcesToLookFor.map(async source => {
-    let sourceId = source.id;
-    let score = await retrieveScoreFromNewsService(craftNewsService([sourceId]));
-    logger.info(`Domain: ${source.url} | ${source.id} | Score: ${score}`)
+    let score = await retrieveScoreFromNewsService(craftNewsServiceFromNewsApiSources([source.id]));
+    if (!score || Number.isNaN(score)) {
+      logger.error(`Unable to retrieve score from domain ${source.url} | ${source.id}. Final score: ${score}`);
+      return;
+    }
+    logger.info(`Domain: ${source.url} | ${source.id} | Score: ${score}`);
+    await NewsSourceRepository.put({
+      id: source.id,
+      url: source.url,
+      score: score,
+    });
+    logger.debug(`Stored data for domain ${source.url} | ${source.id}.`);
   }));
 }
 

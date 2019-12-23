@@ -91,7 +91,7 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
   });
 }
 
-export function craftNewsService(sources: Array<string>): NewsService {
+export function craftNewsServiceFromNewsApiSources(sources: Array<string>): NewsService {
   return {
     getNewsObservable: () => getNewsApiObservableForDomains(sources),
   };
