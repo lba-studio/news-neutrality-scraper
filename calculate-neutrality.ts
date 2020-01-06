@@ -32,7 +32,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   return avgScore;
 }
 
-async function handler() {
+export async function handler() {
   let sources: Array<NewsApiSource> = await NewsApiService.getSources();
   let sourcesToLookFor = sources.filter(source => source.language === 'en');
   if (true) {
@@ -56,9 +56,11 @@ async function handler() {
   }));
 }
 
-handler()
-  .then(() => logger.info('Finished!'))
-  .catch(e => {
-    console.error('Oops! Encountered error:');
-    logger.error(e);
-  });
+if (!module.parent) {
+  handler()
+    .then(() => logger.info('Finished!'))
+    .catch(e => {
+      console.error('Oops! Encountered error:');
+      logger.error(e);
+    });
+}
