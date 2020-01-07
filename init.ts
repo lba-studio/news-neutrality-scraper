@@ -27,4 +27,7 @@ async function main() {
 
 main()
   .then(() => logger.info('Initialization completed.'))
-  .catch(e => logger.error(e) && process.exit(1));
+  .catch(e => {
+    logger.error(e);
+    process.exit(1);
+  });
