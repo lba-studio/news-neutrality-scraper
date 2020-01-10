@@ -7,23 +7,29 @@
     "aws-sdk": "^2.592.0",
     "axios": "^0.19.0",
     "cheerio": "^1.0.0-rc.3",
+    "concurrently": "^5.0.2",
+    "cpx": "^1.5.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "loglevel": "^1.6.6",
     "natural": "^0.6.3",
     "puppeteer": "^2.0.0",
     "rxjs": "^6.5.3",
     "ts-node": "^8.5.2",
-    "typescript": "^3.7.2",
-    "winston": "^3.2.1"
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.39",
     "@types/cheerio": "^0.22.14",
     "@types/express": "^4.17.2",
     "@types/puppeteer": "^2.0.0"
   },
   "scripts": {
-    "scrape": "ts-node -r dotenv/config calculate-neutrality.ts",
-    "start": "npm run scrape",
+    "build": "tsc && npm run copy-dependencies",
+    "build-watch": "npm run build && tsc -w --preserveWatchOutput true",
+    "copy-dependencies": "cpx ./package.json ./dist && cpx ./package-lock.json ./dist && cpx ./.env ./dist && cd ./dist && npm i --production",
+    "start": "concurrently --kill-others --kill-others-on-fail \"npm run build-watch\" \"sam local start-api -p 3001 --template ./template.yaml\"",
+    "scrape": "npm run prestart && ts-node -r dotenv/config calculate-neutrality.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prestart": "ts-node -r dotenv/config init.ts",
     "start-api": "ts-node -r dotenv/config api.ts"

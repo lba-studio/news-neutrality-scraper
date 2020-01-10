@@ -8,4 +8,7 @@ export interface News {
 
 export interface NewsService {
   getNewsObservable: () => Observable<News>;
+  sourceId: string;
+  sourceUrl: string;
+  sourceProvider?: string; // e.g. https://newsapi.org; undefined = it is provided internally (through puppeteer/selenium perhaps?)
 }

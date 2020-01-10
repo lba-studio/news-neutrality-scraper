@@ -2,16 +2,17 @@ import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
 import { dynamoDbDocClient } from '../clients/dynamodb.client';
 import config from '../config';
 
-export interface NewsSource {
+export interface NewsSourceScore {
   id: string;
   score: number;
   url: string;
+  retrievedFrom?: string; // e.g. "https://newsapi.org"
 };
 
 const TABLE_NAME = config.db.tableNames.newsSources;
 
 export const NewsSourceRepository = {
-  get: async (id: string, consistentRead: boolean = false): Promise<NewsSource| undefined> => {
+  get: async (id: string, consistentRead: boolean = false): Promise<NewsSourceScore | undefined> => {
     return dynamoDbDocClient.get({
       TableName: TABLE_NAME,
       Key: {
@@ -19,13 +20,13 @@ export const NewsSourceRepository = {
       },
       ConsistentRead: consistentRead
     }).promise()
-    .then(item => item.Item as NewsSource)
+      .then(item => item.Item as NewsSourceScore)
   },
-  put: async (newsSource: NewsSource) => {
+  put: async (newsSource: NewsSourceScore) => {
     return dynamoDbDocClient.put({ TableName: TABLE_NAME, Item: newsSource }).promise();
   },
-  scan: async (): Promise<Array<NewsSource>> => {
+  scan: async (): Promise<Array<NewsSourceScore>> => {
     return dynamoDbDocClient.scan({ TableName: TABLE_NAME }).promise()
-      .then(item => item.Items as Array<NewsSource>);
+      .then(item => item.Items as Array<NewsSourceScore>);
   }
 };
