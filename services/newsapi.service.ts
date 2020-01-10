@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
 import { NewsApiError } from '../errors';
-import { News, NewsService } from './news/news.service';
+import { News, NewsService } from './news.service';
 import { Observable } from 'rxjs';
 import { logger } from '../utils/logger.util';
 
@@ -41,13 +41,6 @@ interface NewsApiQueryParam {
 const url = config.newsApi.url;
 const apiKey = config.newsApi.apiKey;
 const pageLimit = config.newsApi.pageLimit;
-
-function handleErrorStatusCode(resp: AxiosResponse): AxiosResponse {
-  if (resp.status >= 400) {
-    throw new NewsApiError(`Error status code: ${resp.status} - ${resp.statusText}`);
-  }
-  return resp;
-}
 
 export async function getNewsFromSource(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
   return await axios.get(url + '/everything', {
@@ -91,9 +84,12 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
   });
 }
 
-export function craftNewsServiceFromNewsApiSources(sources: Array<string>): NewsService {
+export function craftNewsServiceFromNewsApiSources(sources: Array<NewsApiSource>): NewsService {
   return {
-    getNewsObservable: () => getNewsApiObservableForDomains(sources),
+    getNewsObservable: () => getNewsApiObservableForDomains(sources.map(source => source.id)),
+    sourceUrl: sources.map(source => source.url).join(','),
+    sourceId: sources.map(source => source.id).join(','),
+    sourceProvider: 'https://newsapi.org',
   };
 }
 

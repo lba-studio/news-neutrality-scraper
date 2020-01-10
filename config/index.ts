@@ -8,7 +8,7 @@ if (result.error) {
   logger.warn(`Cannot load .env file: ${result.error.message}`);
 }
 
-function getEnv(envVarKey: string): string {
+function getRequiredEnvironmentVariable(envVarKey: string): string {
   let envVar = process.env[envVarKey];
   if (envVar === undefined) {
     throw new Error(`Missing environment variable: ${envVarKey}`);
@@ -16,10 +16,14 @@ function getEnv(envVarKey: string): string {
   return envVar;
 }
 
+function toBoolean(envVar?: string): boolean {
+  return envVar === 'true';
+}
+
 const config = {
   newsApi: {
-    apiKey: getEnv('NEWS_API_APIKEY'),
-    url: getEnv('NEWS_API_URL'),
+    apiKey: getRequiredEnvironmentVariable('NEWS_API_APIKEY'),
+    url: getRequiredEnvironmentVariable('NEWS_API_URL'),
     pageLimit: 100,
   },
   db: {
@@ -27,7 +31,8 @@ const config = {
       newsSources: NewsSourcesSchema.TableName,
     },
     localEndpoint: process.env.NODESCRAPE_LOCAL_ENDPOINT,
-  }
+  },
+  isDev: toBoolean(process.env.NODESCRAPE_IS_DEVELOPMENT)
 }
 
 export default config;

@@ -1,4 +1,4 @@
-import { NewsService, News } from "./news.service";
+import { NewsService, News } from "../news.service";
 import { Observable } from 'rxjs';
 import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
@@ -64,5 +64,7 @@ export const AbcNewsService: NewsService = {
       puppeteerInstance.close();
       subscriber.complete();
     })().then(() => subscriber.complete()).catch(e => console.error(e));
-  })
+  }),
+  sourceId: 'abc-news-custommade',
+  sourceUrl: 'https://abc.net.au'
 }
