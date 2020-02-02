@@ -4,12 +4,10 @@ Description: >
     SAMified Nodescrape.
 
 Parameters:
-    DynamoTableDisruptions:
+    NewsApiApikey:
         Type: String
-        Default: Disruptions
-    DynamoTableSession:
+    NewsApiUrl:
         Type: String
-        Default: Session
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -18,7 +16,9 @@ Globals:
         Environment:
             Variables:
                 LOCAL_DYNAMODB_ENDPOINT: "http://192.168.99.100:8000"
-
+                NODESCRAPE_LOG_LEVEL: DEBUG
+                NEWS_API_APIKEY: !Ref NewsApiApikey
+                NEWS_API_URL: !Ref NewsApiUrl
 
 Resources:    
     GetNewsSourcesFunction:
@@ -38,7 +38,7 @@ Resources:
                 - DynamoDBCrudPolicy:
                     TableName: !Ref NewsSourceTable
 
-    HelloWorldFunction:
+    PingFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: dist/
@@ -63,11 +63,12 @@ Resources:
                 CalculateNeutralityApi:
                     Type: Api
                     Properties:
-                        Path: /
+                        Path: /calculate
                         Method: get
+                # TODO add rate() instead of manually calling through API
             Policies:
                 - DynamoDBCrudPolicy:
-                    TableName: !Ref NewsSourceTable
+                    TableName: !Ref NewsSourceTable                    
 
     NewsSourceTable:
         Type: AWS::DynamoDB::Table

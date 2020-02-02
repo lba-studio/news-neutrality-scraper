@@ -32,7 +32,8 @@ const config = {
     },
     localEndpoint: process.env.NODESCRAPE_LOCAL_ENDPOINT,
   },
-  isDev: toBoolean(process.env.NODESCRAPE_IS_DEVELOPMENT)
+  isDev: toBoolean(process.env.NODESCRAPE_IS_DEVELOPMENT),
+  logLevel: process.env.NODESCRAPE_LOG_LEVEL || 'info',
 }
 
 export default config;

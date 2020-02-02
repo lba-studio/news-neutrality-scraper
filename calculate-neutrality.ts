@@ -6,6 +6,7 @@ import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sourc
 import { Observable, Subscriber } from "rxjs";
 import { map, mergeAll, concatAll } from 'rxjs/operators';
 import config from './config';
+import { APIGatewayProxyResult } from "aws-lambda";
 
 /**
  * most important function that people can contribute to.
@@ -49,10 +50,16 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   return avgScore;
 }
 
-export async function handler() {
+export async function handler(): Promise<APIGatewayProxyResult> {
+  logger.info(config.newsApi);
   await loadNewsServicesToAnalyze().pipe(
     map(async newsService => {
-      let score = await retrieveScoreFromNewsService(newsService);
+      let score: number | undefined;
+      try {
+        score = await retrieveScoreFromNewsService(newsService);
+      } catch (e) {
+        score = undefined;
+      }
       if (!score || Number.isNaN(score)) {
         logger.error(`Unable to retrieve score from domain ${newsService.sourceUrl} | ${newsService.sourceId}. Final score: ${score}`);
         return;
@@ -68,6 +75,10 @@ export async function handler() {
     }),
     concatAll(),
   ).forEach(newsSourceScore => logger.debug('Calculated and stored news source score:', newsSourceScore));
+  return {
+    statusCode: 204,
+    body: '',
+  };
 }
 
 if (!module.parent) {

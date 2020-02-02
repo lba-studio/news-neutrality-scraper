@@ -3,11 +3,12 @@ import config from '../config';
 import { logger } from '../utils/logger.util';
 
 let options: AWS.DynamoDB.Types.ClientConfiguration = {
-    region: 'ap-southeast-2',
+    
 };
 let localEndpoint: string | undefined = config.db.localEndpoint;
 if (localEndpoint) {
     logger.debug(`Using ${localEndpoint} for DynamoDB.`);
+    options.region = 'ap-southeast-2';
     options.endpoint = localEndpoint;
 }
 export const dynamoDbDocClient: AWS.DynamoDB.DocumentClient = new AWS.DynamoDB.DocumentClient(options);
