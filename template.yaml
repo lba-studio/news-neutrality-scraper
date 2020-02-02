@@ -6,8 +6,11 @@ Description: >
 Parameters:
     NewsApiApikey:
         Type: String
+        NoEcho: true
     NewsApiUrl:
         Type: String
+        Default: "https://newsapi.org/v2"
+        Description: The URL to NewsAPI.org.
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
