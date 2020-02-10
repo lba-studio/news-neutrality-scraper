@@ -22,7 +22,7 @@ function loadNewsServicesToAnalyze(): Observable<NewsService> {
         let sourcesToLookFor = sources.filter(source => source.language === 'en');
         if (config.isDev) {
           let sourceLimit = 3;
-          sourcesToLookFor = sources.slice(0, sourceLimit);
+          sourcesToLookFor = sourcesToLookFor.slice(0, sourceLimit);
         }
         sourcesToLookFor.forEach(source => subscriber.next(craftNewsServiceFromNewsApiSources([source])));
       })(),
@@ -82,6 +82,7 @@ export async function handler(): Promise<APIGatewayProxyResult> {
 }
 
 if (!module.parent) {
+  logger.info('Executing neutrality calculation script.');
   handler()
     .then(() => logger.info('Finished!'))
     .catch(e => {

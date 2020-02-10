@@ -61,7 +61,7 @@ Resources:
             CodeUri: dist/
             Handler: calculate-neutrality.handler
             Runtime: nodejs10.x
-            Timeout: 60
+            Timeout: 120
             Events:
                 CalculateNeutralityApi:
                     Type: Api
