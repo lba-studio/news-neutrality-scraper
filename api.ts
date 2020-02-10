@@ -9,7 +9,7 @@ import express from 'express';
 const app = express();
 const port = 3001;
 
-app.get('/:id', async (req, res) => {
+app.get('/news-scores/:id', async (req, res) => {
   let sourceId = req.params.id;
   let newsSource = await NewsSourceRepository.get(sourceId);
   if (!newsSource) {
@@ -18,7 +18,7 @@ app.get('/:id', async (req, res) => {
   return res.status(200).json(newsSource);
 });
 
-app.get('/', async (req, res) => {
+app.get('/news-scores', async (req, res) => {
   let sources = await NewsSourceRepository.scan();
   return res.status(200).json(sources);
 });
