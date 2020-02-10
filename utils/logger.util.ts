@@ -1,5 +1,5 @@
 import log from 'loglevel'; // weird... see https://github.com/pimterry/loglevel/issues/127
-import config from '../config';
+import { config } from '../config';
 
 
 // TODO load from env

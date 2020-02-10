@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import config from '../config';
+import { config } from '../config';
 import { logger } from '../utils/logger.util';
 
 let options: AWS.DynamoDB.Types.ClientConfiguration = {

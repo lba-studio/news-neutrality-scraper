@@ -1,6 +1,6 @@
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
 import { dynamoDbDocClient } from '../clients/dynamodb.client';
-import config from '../config';
+import { config } from '../config';
 
 export interface NewsSourceScore {
   id: string;

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import config from '../config';
+import { config } from '../config';
 import { NewsApiError } from '../errors';
 import { News, NewsService } from './news.service';
 import { Observable } from 'rxjs';

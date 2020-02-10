@@ -1,9 +1,9 @@
 set -xe
 
+[ -z "$1" ] && echo "Please pass in the environment name as an argument (e.g. \"./.ci/deploy.sh prod\")"  && exit 1
+
 npm run clean
 npm run build
-
-[ -z "$1" ] && echo "Please pass in the environment name as an argument (e.g. \"./.ci/deploy.sh prod\")"  && exit 1
 
 TEMPLATE_FILENAME="template.yaml"
 PACKAGED_TEMPLATE_FILENAME="packaged.yaml"

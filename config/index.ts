@@ -20,7 +20,7 @@ function toBoolean(envVar?: string): boolean {
   return envVar === 'true';
 }
 
-const config = {
+export const config = {
   newsApi: {
     apiKey: getRequiredEnvironmentVariable('NEWS_API_APIKEY'),
     url: getRequiredEnvironmentVariable('NEWS_API_URL'),
@@ -34,6 +34,4 @@ const config = {
   },
   isDev: toBoolean(process.env.NODESCRAPE_IS_DEVELOPMENT),
   logLevel: process.env.NODESCRAPE_LOG_LEVEL || 'info',
-}
-
-export default config;
+};

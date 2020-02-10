@@ -5,8 +5,9 @@ import { craftNewsServiceFromNewsApiSources, NewsApiService, NewsApiSource } fro
 import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sources.repository";
 import { Observable, Subscriber } from "rxjs";
 import { map, mergeAll, concatAll } from 'rxjs/operators';
-import config from './config';
+import { config } from './config';
 import { APIGatewayProxyResult } from "aws-lambda";
+import { handleError } from "./helpers/lambda.helper";
 
 /**
  * most important function that people can contribute to.
@@ -50,7 +51,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   return avgScore;
 }
 
-export async function handler(): Promise<APIGatewayProxyResult> {
+async function calculateNeutrality() {
   logger.info(config.newsApi);
   await loadNewsServicesToAnalyze().pipe(
     map(async newsService => {
@@ -81,9 +82,11 @@ export async function handler(): Promise<APIGatewayProxyResult> {
   };
 }
 
+export const handler = handleError(calculateNeutrality);
+
 if (!module.parent) {
   logger.info('Executing neutrality calculation script.');
-  handler()
+  calculateNeutrality()
     .then(() => logger.info('Finished!'))
     .catch(e => {
       console.error('Oops! Encountered error:');
