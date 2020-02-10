@@ -29,7 +29,7 @@ Resources:
         Properties:
             CodeUri: dist/
             Handler: lambda-handlers/get-news.getNews
-            Runtime: nodejs10.x
+            Runtime: nodejs12.x
             Timeout: 30
             Events:
                 GetNewsSourcesApi:
@@ -46,7 +46,7 @@ Resources:
         Properties:
             CodeUri: dist/
             Handler: lambda-handlers/hello-world.helloWorld
-            Runtime: nodejs10.x
+            Runtime: nodejs12.x
             Timeout: 30
             Events:
                 GetNewsSourcesApi:
@@ -60,7 +60,7 @@ Resources:
         Properties:
             CodeUri: dist/
             Handler: calculate-neutrality.handler
-            Runtime: nodejs10.x
+            Runtime: nodejs12.x
             Timeout: 120
             Events:
                 CalculateNeutralityApi:
