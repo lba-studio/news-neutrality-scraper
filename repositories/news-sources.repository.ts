@@ -1,4 +1,3 @@
-import { CreateTableInput } from 'aws-sdk/clients/dynamodb';
 import { dynamoDbDocClient } from '../clients/dynamodb.client';
 import { config } from '../config';
 

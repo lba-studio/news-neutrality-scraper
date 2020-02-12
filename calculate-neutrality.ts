@@ -45,7 +45,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
     } else {
       avgScore = (avgScore + score) / 2;
     }
-    logger.debug(`${counter} texts analyzed! Avg score: ${avgScore}`);
+    logger.trace(`${counter} texts analyzed! Avg score: ${avgScore}`);
     counter += 1;
   });
   return avgScore;
@@ -59,6 +59,7 @@ async function calculateNeutrality() {
       try {
         score = await retrieveScoreFromNewsService(newsService);
       } catch (e) {
+        logger.error(e);
         score = undefined;
       }
       if (!score || Number.isNaN(score)) {

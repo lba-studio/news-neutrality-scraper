@@ -1,11 +1,10 @@
 import { NewsSourcesSchema } from './dynamo-schemas'
 import dotenv from 'dotenv';
-import { logger } from '../utils/logger.util';
 
 const result = dotenv.config();
 
 if (result.error) {
-  logger.warn(`Cannot load .env file: ${result.error.message}`);
+  console.warn(`Cannot load .env file: ${result.error.message}`);
 }
 
 function getRequiredEnvironmentVariable(envVarKey: string): string {

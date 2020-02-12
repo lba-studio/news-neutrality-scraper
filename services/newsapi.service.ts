@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { config } from '../config';
 import { NewsApiError } from '../errors';
 import { News, NewsService } from './news.service';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { logger } from '../utils/logger.util';
 
 export interface NewsApiResponse {
@@ -18,8 +18,9 @@ export interface NewsApiArticle {
   },
   author?: string;
   title: string;
-  description: string;
+  description?: string;
   url: string;
+  content?: string;
 };
 
 export interface NewsApiSource {
@@ -70,17 +71,20 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
           pageSize: pageSize,
         });
         data.articles.forEach(article => {
-          if (!article.description || !article.title) {
-            console.dir(article, { depth: null })
-            throw new Error(`Empty description or title for source ${sources.toString()}!`);
+          let content = article.description || article.content;
+          let title = article.title;
+          if (!content || !title) {
+            console.dir(article, { depth: null });
+            throw new Error(`Empty content or title for source ${sources.toString()}!`);
           }
           subscriber.next({
-            content: article.description,
-            title: article.title,
+            content: content,
+            title: title,
           });
         });
       } while (data.articles.length > 0 && pageNumber * pageSize <= pageLimit)
-    })().then(() => subscriber.complete());
+    })().then(() => subscriber.complete())
+    .catch(e => subscriber.error(e));
   });
 }
 

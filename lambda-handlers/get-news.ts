@@ -1,13 +1,14 @@
 import { APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
 import { NewsSourceRepository } from "../repositories/news-sources.repository";
+import { handleError } from "../helpers/lambda.helper";
 
-export async function getNews(): Promise<APIGatewayProxyResult> {
+export const getNews: APIGatewayProxyHandler = handleError(async () => {
   const results = await NewsSourceRepository.scan();
   return {
     statusCode: 200,
     body: JSON.stringify(results),
   };
-}
+});
 
 export const getNewsById: APIGatewayProxyHandler = async (event) => {
   if (!event.pathParameters || !event.pathParameters.id) {
