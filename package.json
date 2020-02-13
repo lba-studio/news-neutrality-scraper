@@ -33,5 +33,6 @@
     "start-api": "ts-node -r dotenv/config api.ts"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "private": true
 }
