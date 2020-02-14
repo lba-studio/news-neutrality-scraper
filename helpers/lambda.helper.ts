@@ -1,13 +1,17 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult, APIGatewayProxyEvent, Context, Callback } from "aws-lambda";
 import { logger } from "../utils/logger.util";
 
+function checkIfResultIsEmpty(result: void | APIGatewayProxyResult): APIGatewayProxyResult {
+  if (!result) {
+    throw new Error('Fatal implementation error: Empty result.');
+  }
+  return result;
+}
+
 export function handleError(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
   return async (...args) => {
     try {
-      const result = await func(...args);
-      if (!result) {
-        throw new Error('Fatal implementation error: Empty result.');
-      }
+      const result = checkIfResultIsEmpty(await func(...args));
       return result;
     } catch (e) {
       let errorObject = (e instanceof Error) ? {
@@ -22,4 +26,16 @@ export function handleError(func: APIGatewayProxyHandler): APIGatewayProxyHandle
       };
     }
   };
+}
+
+export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
+  return async (...args) => {
+    const result = checkIfResultIsEmpty(await func(...args));
+    return {
+      ...result,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    }
+  }
 }

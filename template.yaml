@@ -22,6 +22,12 @@ Globals:
                 NODESCRAPE_LOG_LEVEL: DEBUG
                 NEWS_API_APIKEY: !Ref NewsApiApikey
                 NEWS_API_URL: !Ref NewsApiUrl
+    Api:
+        Cors:
+            AllowMethods: "'*'"
+            AllowOrigin: "'*'"
+            AllowHeaders: "'*'"
+            AllowCredentials: true
 
 Resources:    
     GetNewsSourcesFunction:
