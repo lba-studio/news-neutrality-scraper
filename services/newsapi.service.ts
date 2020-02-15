@@ -88,12 +88,14 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
   });
 }
 
-export function craftNewsServiceFromNewsApiSources(sources: Array<NewsApiSource>): NewsService {
+export function craftNewsServiceFromNewsApiSource(source: NewsApiSource): NewsService {
   return {
-    getNewsObservable: () => getNewsApiObservableForDomains(sources.map(source => source.id)),
-    sourceUrl: sources.map(source => source.url).join(','),
-    sourceId: sources.map(source => source.id).join(','),
+    getNewsObservable: () => getNewsApiObservableForDomains([source.id]),
+    sourceUrl: source.url,
+    sourceId: source.id,
     sourceProvider: 'https://newsapi.org',
+    sourceName: source.name,
+    sourceCountry: source.country,
   };
 }
 

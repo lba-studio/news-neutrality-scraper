@@ -6,6 +6,8 @@ export interface NewsSourceScore {
   score: number;
   url: string;
   retrievedFrom?: string; // e.g. "https://newsapi.org"
+  name: string;
+  country: string;
 };
 
 const TABLE_NAME = config.db.tableNames.newsSources;

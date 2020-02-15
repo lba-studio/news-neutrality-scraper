@@ -1,7 +1,7 @@
 import { analyzeText } from "./services/sentiment-analyzer.service";
 import { News, NewsService } from "./services/news.service";
 import { logger } from './utils/logger.util';
-import { craftNewsServiceFromNewsApiSources, NewsApiService, NewsApiSource } from "./services/newsapi.service";
+import { craftNewsServiceFromNewsApiSource, NewsApiService, NewsApiSource } from "./services/newsapi.service";
 import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sources.repository";
 import { Observable, Subscriber } from "rxjs";
 import { map, mergeAll, concatAll } from 'rxjs/operators';
@@ -25,7 +25,7 @@ function loadNewsServicesToAnalyze(): Observable<NewsService> {
           let sourceLimit = 3;
           sourcesToLookFor = sourcesToLookFor.slice(0, sourceLimit);
         }
-        sourcesToLookFor.forEach(source => subscriber.next(craftNewsServiceFromNewsApiSources([source])));
+        sourcesToLookFor.forEach(source => subscriber.next(craftNewsServiceFromNewsApiSource(source)));
       })(),
     ]).then(() => subscriber.complete())
       .catch(e => subscriber.error(e));
@@ -70,7 +70,9 @@ async function calculateNeutrality() {
         id: newsService.sourceId,
         url: newsService.sourceUrl,
         score: score,
-        retrievedFrom: 'https://newsapi.org'
+        retrievedFrom: 'https://newsapi.org',
+        name: newsService.sourceName,
+        country: newsService.sourceCountry,
       };
       await NewsSourceRepository.put(newsSourceScore);
       return newsSourceScore;
