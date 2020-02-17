@@ -42,6 +42,7 @@ npm start
 
 # Available APIs
 `GET /news-scores` - returns a list of news sources along with their average sentiment score.
+
 `GET /calculate` - (this should be a PUT, but made it a GET for easy debugging for now) triggers the news sentiment calculation and stores the result in DynamoDB, which is exposed through `GET /news-scores` .
 
 # Deploying the application
