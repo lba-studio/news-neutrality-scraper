@@ -8,6 +8,7 @@ export interface NewsSourceScore {
   retrievedFrom?: string; // e.g. "https://newsapi.org"
   name: string;
   country: string;
+  lastUpdatedMs: number;
 };
 
 const TABLE_NAME = config.db.tableNames.newsSources;

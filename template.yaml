@@ -27,7 +27,6 @@ Globals:
             AllowMethods: "'*'"
             AllowOrigin: "'*'"
             AllowHeaders: "'*'"
-            AllowCredentials: true
 
 Resources:    
     GetNewsSourcesFunction:
@@ -74,7 +73,10 @@ Resources:
                     Properties:
                         Path: /calculate
                         Method: get
-                # TODO add rate() instead of manually calling through API
+                CNScheduledEvent:
+                    Type: Schedule
+                    Properties:
+                        Schedule: rate(1 day)
             Policies:
                 - DynamoDBCrudPolicy:
                     TableName: !Ref NewsSourceTable                    
