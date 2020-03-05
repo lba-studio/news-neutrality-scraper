@@ -45,7 +45,8 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
     concatAll(),
   ).forEach(score => {
     if (score === undefined) {
-      throw new Error('Unable to ')
+      avgScore = undefined;
+      throw new Error(`Unable to retrieve score for ${newsService.sourceId}.`);
     }
     if (avgScore === undefined) {
       avgScore = score;
@@ -54,7 +55,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
     }
     logger.trace(`${counter} texts analyzed! Avg score: ${avgScore}`);
     counter += 1;
-  });
+  }).catch(e => logger.error(e));
   return avgScore;
 }
 
