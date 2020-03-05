@@ -3,7 +3,7 @@ import { News, NewsService } from "./services/news.service";
 import { logger } from './utils/logger.util';
 import { craftNewsServiceFromNewsApiSource, NewsApiService, NewsApiSource } from "./services/newsapi.service";
 import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sources.repository";
-import { Observable, Subscriber } from "rxjs";
+import { Observable, Subscriber, from } from "rxjs";
 import { map, mergeAll, concatAll } from 'rxjs/operators';
 import { config } from './config';
 import { APIGatewayProxyResult } from "aws-lambda";
@@ -35,11 +35,18 @@ function loadNewsServicesToAnalyze(): Observable<NewsService> {
 async function retrieveScoreFromNewsService(newsService: NewsService): Promise<number | undefined> {
   let avgScore: number | undefined = undefined;
   let counter = 0;
-  await newsService.getNewsObservable().forEach((news: News) => {
-    if (!news.content) {
-      return;
+  await newsService.getNewsObservable().pipe(
+    map(async (news: News) => {
+      if (!news.content) {
+        return;
+      }
+      return analyzeText(news.content);
+    }),
+    concatAll(),
+  ).forEach(score => {
+    if (score === undefined) {
+      throw new Error('Unable to ')
     }
-    let score = analyzeText(news.content);
     if (avgScore === undefined) {
       avgScore = score;
     } else {
