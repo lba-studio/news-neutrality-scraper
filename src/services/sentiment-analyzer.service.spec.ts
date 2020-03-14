@@ -1,4 +1,4 @@
-import { analyzeText } from "./sentiment-analyzer.service";
+import sentimentAnalyzerService from "./sentiment-analyzer.service";
 import { expect } from 'chai';
 import aws from 'aws-sdk';
 import comprehend from '../clients/comprehend.client'
@@ -55,7 +55,7 @@ describe("sentiment-analyzer.service", () => {
         ErrorList: [],
       })
     } as AWSBatchDetectSentimentRequest);
-    const score = await analyzeText(input);
+    const score = await sentimentAnalyzerService.analyzeText(input);
     expect(score).to.not.be.undefined;
     expect(score).to.equal(0.4 - 0.6);
   });
@@ -77,7 +77,7 @@ describe("sentiment-analyzer.service", () => {
         ErrorList: [],
       })
     } as AWSBatchDetectSentimentRequest);
-    expect(analyzeText(input)).to.eventually.be.rejected;
+    expect(sentimentAnalyzerService.analyzeText(input)).to.eventually.be.rejected;
   });
 
   it('should be able to handle large volumes of texts (25+)', async () => {
@@ -91,7 +91,7 @@ describe("sentiment-analyzer.service", () => {
       } as AWSBatchDetectSentimentRequest;
     }) as any);
     await Promise.all(inputs.map(async input => {
-      const score = await analyzeText(input);
+      const score = await sentimentAnalyzerService.analyzeText(input);
       expect(score).to.equal(input.length);
     }));
   }).timeout(60000);

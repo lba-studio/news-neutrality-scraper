@@ -15,7 +15,7 @@ const WAIT_MS_BEFORE_SENDING = 1000;
 const MAX_BATCH_BUFFER_SIZE = 25;
 const COMPREHEND_QUOTA_PER_SECOND = 10;
 
-export async function analyzeText(text: string): Promise<number> {
+async function analyzeText(text: string): Promise<number> {
   // logger.debug('Analysing text');
   return new Promise((res, rej) => {
     sendForProcessing({

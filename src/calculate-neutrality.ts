@@ -1,4 +1,4 @@
-import { analyzeText } from "./services/sentiment-analyzer.service";
+import sentimentAnalyzerService from "./services/sentiment-analyzer.service";
 import { News, NewsService } from "./services/news";
 import { logger } from './utils/logger.util';
 import { craftNewsServiceFromNewsApiSource, NewsApiService, NewsApiSource } from "./services/news/newsapi.service";
@@ -37,7 +37,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   let counter = 0;
   await newsService.getNewsObservable().pipe(
     map(async (news: News): Promise<number | undefined> => {
-      return analyzeText(news.content).catch(e => {
+      return sentimentAnalyzerService.analyzeText(news.content).catch(e => {
         logger.error(`Unable to retrieve score for ${newsService.sourceId}:`, e);
         return undefined;
       });
