@@ -1,9 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
-import { config } from '../config';
-import { NewsApiError } from '../errors';
-import { News, NewsService } from './news.service';
+import axios from 'axios';
+import { config } from '../../config';
+import { NewsApiError } from '../../errors';
+import { News, NewsService } from '.';
 import { Observable, throwError } from 'rxjs';
-import { logger } from '../utils/logger.util';
+import { logger } from '../../utils/logger.util';
 
 export interface NewsApiResponse {
   status: string;
