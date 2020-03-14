@@ -15,13 +15,20 @@
     "typescript": "^3.7.5"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.149",
     "@types/aws-lambda": "^8.10.40",
+    "@types/chai": "^4.2.10",
+    "@types/chai-as-promised": "^7.1.2",
     "@types/express": "^4.17.2",
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.2",
+    "@types/sinon": "^7.5.2",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "concurrently": "^5.1.0",
     "cpx": "^1.5.0",
     "mocha": "^7.1.0",
     "rimraf": "^3.0.2",
+    "sinon": "^9.0.0",
     "ts-node": "^8.6.2"
   },
   "scripts": {
@@ -29,9 +36,9 @@
     "build": "tsc && npm run copy-dependencies",
     "build-watch": "npm run build && cpx ./.env ./dist && tsc -w --preserveWatchOutput true",
     "copy-dependencies": "cpx ./package.json ./dist && cpx ./package-lock.json ./dist && cd ./dist && npm i --production",
-    "start": "concurrently --kill-others --kill-others-on-fail \"npm run build-watch\" \"sam local start-api -p 3001 --template ./template.yaml\"",
-    "scrape": "npm run prestart && ts-node -r dotenv/config calculate-neutrality.ts",
-    "test": "mocha --require ts-node/register ./**/*.spec.ts",
+    "start": "concurrently --kill-others --kill-others-on-fail \"npm run build-watch\" \"docker pull lambci/lambda:nodejs12.x && sam local start-api -p 3001 --skip-pull-image --template ./template.yaml\"",
+    "scrape": "npm run prestart && ts-node -r dotenv/config ./src/calculate-neutrality.ts",
+    "test": "mocha --require ts-node/register ./src/**/*.spec.ts",
     "prestart": "ts-node -r dotenv/config src/init.ts",
     "start-api": "ts-node -r dotenv/config src/api.ts"
   },
