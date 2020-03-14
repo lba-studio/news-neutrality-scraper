@@ -39,3 +39,20 @@ export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler
     }
   }
 }
+
+export function defaultApiResponseHandler(func: Function, statusCode?: number): APIGatewayProxyHandler {
+  return handleError(injectCors(async (...args) => {
+    const result = await func();
+    if (!result) {
+      return {
+        body: '',
+        statusCode: statusCode || 204,
+      }
+    } else {
+      return {
+        body: JSON.stringify(result),
+        statusCode: statusCode || 200,
+      }
+    }
+  }));
+}
