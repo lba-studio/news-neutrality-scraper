@@ -35,7 +35,6 @@ Resources:
             CodeUri: dist/
             Handler: lambda-handlers/get-news.getNews
             Runtime: nodejs12.x
-            Timeout: 30
             Events:
                 GetNewsSourcesApi:
                     Type: Api
