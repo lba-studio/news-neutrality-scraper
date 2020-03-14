@@ -1,36 +1,11 @@
 import sentimentAnalyzerService from "./services/sentiment-analyzer.service";
 import { News, NewsService } from "./services/news";
 import { logger } from './utils/logger.util';
-import { craftNewsServiceFromNewsApiSource, NewsApiService, NewsApiSource } from "./services/news/newsapi.service";
 import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sources.repository";
-import { Observable } from "rxjs";
 import { map, concatAll, filter } from 'rxjs/operators';
 import { config } from './config';
 import { defaultApiResponseHandler } from "./helpers/lambda.helper";
-
-/**
- * most important function that people can contribute to.
- * this is the entry point of the function; it prepares the NewsServices, which are then piped
- * into retrieveScoreFromNewsService(). see handler().
- */
-function loadNewsServicesToAnalyze(): Observable<NewsService> {
-  return new Observable(subscriber => {
-    Promise.all([
-      (async () => {
-        // loads NewsServices from NewsAPI.org
-        let sources: Array<NewsApiSource> = await NewsApiService.getSources();
-        let sourcesToLookFor = sources.filter(source => source.language === 'en');
-        if (config.isDev) {
-          let sourceLimit = 3;
-          logger.info(`Limiting source to ${sourceLimit} sources.`);
-          sourcesToLookFor = sourcesToLookFor.slice(0, sourceLimit);
-        }
-        sourcesToLookFor.forEach(source => subscriber.next(craftNewsServiceFromNewsApiSource(source)));
-      })(),
-    ]).then(() => subscriber.complete())
-      .catch(e => subscriber.error(e));
-  });
-}
+import loadNewsServicesToAnalyze from "./utils/loadNewsServicesToAnalyze";
 
 async function retrieveScoreFromNewsService(newsService: NewsService): Promise<number | undefined> {
   let avgScore: number | undefined = undefined;
