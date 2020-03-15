@@ -41,7 +41,7 @@ export async function calculateNeutrality() {
   logger.info('Calculating neutrality...');
   await loadNewsServicesToAnalyze().pipe(
     map(async newsService => {
-      logger.debug('Analysing news service');
+      logger.debug(`Analysing news: ${newsService.sourceUrl}.`);
       let score: number;
       try {
         let result = await retrieveScoreFromNewsService(newsService);
@@ -53,7 +53,6 @@ export async function calculateNeutrality() {
         logger.error(e);
         return undefined;
       }
-      logger.debug('Done score calculation');
       let newsSourceScore: NewsSourceScore = {
         id: newsService.sourceId,
         url: newsService.sourceUrl,

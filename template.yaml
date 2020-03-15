@@ -11,6 +11,9 @@ Parameters:
         Type: String
         Default: "https://newsapi.org/v2"
         Description: The URL to NewsAPI.org.
+    LogLevel:
+        Type: String
+        Default: DEBUG
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -19,7 +22,7 @@ Globals:
         Environment:
             Variables:
                 LOCAL_DYNAMODB_ENDPOINT: "http://192.168.99.100:8000"
-                NODESCRAPE_LOG_LEVEL: DEBUG
+                NODESCRAPE_LOG_LEVEL: !Ref LogLevel
                 NEWS_API_APIKEY: !Ref NewsApiApikey
                 NEWS_API_URL: !Ref NewsApiUrl
     Api:
@@ -78,7 +81,8 @@ Resources:
                         Schedule: rate(1 day)
             Policies:
                 - DynamoDBCrudPolicy:
-                    TableName: !Ref NewsSourceTable                    
+                    TableName: !Ref NewsSourceTable 
+                - ComprehendBasicAccessPolicy: {}                   
 
     NewsSourceTable:
         Type: AWS::DynamoDB::Table
