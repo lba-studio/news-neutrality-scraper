@@ -73,9 +73,9 @@ async function dispatch() {
       docRequest.onError(e);
     });
   } catch (e) {
+    // it's a bad batch homie! let's get rid of em all
     logger.error(e);
     requestList.forEach(request => request.onError(e));
-    throw e;
   }
 }
 

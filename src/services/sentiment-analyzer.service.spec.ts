@@ -4,11 +4,8 @@ import aws from 'aws-sdk';
 import comprehend from '../clients/comprehend.client'
 import sinon from 'sinon';
 import { BatchDetectSentimentResponse, BatchDetectSentimentItemResult, ListOfDetectSentimentResult, BatchDetectSentimentRequest } from "aws-sdk/clients/comprehend";
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import mockAsync from "../utils/mockAsync";
-
-chai.use(chaiAsPromised);
+import '../utils/setupTest';
 
 type AWSBatchDetectSentimentRequest = aws.Request<aws.Comprehend.BatchDetectSentimentResponse, aws.AWSError>;
 
@@ -77,7 +74,7 @@ describe("sentiment-analyzer.service", () => {
         ErrorList: [],
       })
     } as AWSBatchDetectSentimentRequest);
-    expect(sentimentAnalyzerService.analyzeText(input)).to.eventually.be.rejected;
+    await expect(sentimentAnalyzerService.analyzeText(input)).to.eventually.be.rejected;
   });
 
   it('should be able to handle large volumes of texts (25+)', async () => {
