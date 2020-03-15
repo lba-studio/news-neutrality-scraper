@@ -86,7 +86,7 @@ Resources:
             Fn::Transform:
               Name: AWS::Include
               Parameters:
-                Location: ./config/dynamo-schemas/news-sources.schema.json
+                Location: ./src/config/dynamo-schemas/news-sources.schema.json
 
 Outputs:
 
