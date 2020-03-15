@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 
+
 export interface News {
-  title?: string;
-  subtitle?: string;
+  title: string;
   content: string;
 }
 
