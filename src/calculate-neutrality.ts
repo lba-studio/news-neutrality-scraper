@@ -34,7 +34,7 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
   return avgScore;
 }
 
-async function calculateNeutrality() {
+export async function calculateNeutrality() {
   logger.info(config.newsApi);
   // get timestamp
   const timeStampMs = Date.now();
@@ -58,7 +58,7 @@ async function calculateNeutrality() {
         id: newsService.sourceId,
         url: newsService.sourceUrl,
         score: score,
-        retrievedFrom: 'https://newsapi.org',
+        retrievedFrom: newsService.sourceProvider,
         name: newsService.sourceName,
         country: newsService.sourceCountry,
         lastUpdatedMs: timeStampMs,
