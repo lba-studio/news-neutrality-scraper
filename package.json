@@ -10,7 +10,6 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "loglevel": "^1.6.6",
-    "natural": "^0.6.3",
     "rxjs": "^6.5.4",
     "typescript": "^3.7.5"
   },
