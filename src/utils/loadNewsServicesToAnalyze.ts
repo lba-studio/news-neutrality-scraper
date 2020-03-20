@@ -13,9 +13,14 @@ function loadNewsServicesToAnalyze(): Observable<NewsService> {
   return new Observable(subscriber => {
     Promise.all([
       (async () => {
+        const countries = [
+          'us',
+          'au',
+        ];
         // loads NewsServices from NewsAPI.org
         let sources: Array<NewsApiSource> = await NewsApiService.getSources();
-        let sourcesToLookFor = sources.filter(source => source.language === 'en');
+        let sourcesToLookFor = sources.filter(source => source.language === 'en')
+          .filter(source => countries.includes(source.country));
         if (config.isDev) {
           let sourceLimit = 3;
           logger.info(`Limiting source to ${sourceLimit} sources.`);
