@@ -1,7 +1,7 @@
 
 import './utils/setupTest';
 import * as calculateNeutrality from './calculate-neutrality';
-import * as loadNewsServicesToAnalyze from './utils/loadNewsServicesToAnalyze';
+import loaders from './loaders';
 import sinon from 'sinon';
 import { NewsService, News } from './services/news';
 import { Observable } from 'rxjs';
@@ -30,7 +30,7 @@ describe('calculate-neutrality', () => {
       sourceProvider: 'stubz',
       sourceName: 'Stubby McStub',
     };
-    sinon.stub(loadNewsServicesToAnalyze, 'default').callsFake(() => {
+    sinon.stub(loaders, 'loadNewsServicesToAnalyze').callsFake(() => {
       return new Observable<NewsService>(subscriber => {
         subscriber.next(stubNewsService);
         subscriber.complete();
