@@ -28,8 +28,8 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
     } else {
       avgScore = (avgScore + score) / 2;
     }
-    logger.debug(`${counter} texts analyzed! Avg score: ${avgScore}`);
     counter += 1;
+    logger.debug(`${counter} texts analyzed! Avg score: ${avgScore}`);
   }).catch(e => logger.error(e));
   return avgScore;
 }

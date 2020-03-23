@@ -8,6 +8,11 @@ async function rssNewsServiceLoader(subscriber: Subscriber<NewsService>) {
       sourceUrl: 'http://www.sbs.com.au/news/rss/Section/Top+Stories',
       sourceName: 'SBS',
       sourceCountry: 'au',
+    },
+    {
+      sourceUrl: 'http://www.9news.com.au/rss',
+      sourceName: '9News',
+      sourceCountry: 'au',
     }
   ];
   rssFeeds.forEach(rssFeed => subscriber.next(new NewsRssService(rssFeed.sourceUrl, rssFeed.sourceName, rssFeed.sourceCountry)));
