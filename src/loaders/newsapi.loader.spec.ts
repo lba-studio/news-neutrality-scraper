@@ -1,7 +1,6 @@
 import '../utils/setupTest';
 import sinon from 'sinon';
 import { NewsApiService, NewsApiSource } from '../services/news/newsapi.service';
-import loadNewsServicesToAnalyze from './loadNewsServicesToAnalyze';
 import { expect } from 'chai';
 import newsApiServiceLoader from './newsapi.loader';
 import { Observable } from 'rxjs';

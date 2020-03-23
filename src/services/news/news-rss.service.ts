@@ -13,7 +13,7 @@ class NewsRssService implements NewsService {
     readonly sourceName: string,
     readonly sourceCountry: string,
   ) {
-    this.sourceId = `rss-${this.sourceUrl.replace(/^https?:\/\//, '')}`;
+    this.sourceId = `rss-${this.sourceUrl.replace(/^https?:\/\//, '')}`; // prettified really
   }
 
   getNewsObservable() {
@@ -21,8 +21,17 @@ class NewsRssService implements NewsService {
       (async () => {
         let data = await axios.get(this.sourceUrl).then(e => e.data);
         let feed = await parser.parseString(data);
-        feed.items?.forEach(item => {
-          let contentEncoded: string | undefined = htmlToText.fromString(item['content:encoded'], {
+        if (!feed.items) {
+          throw new Error('RSS - Empty items!');
+        }
+        feed.items.forEach(item => {
+          let dirtyContent: string | undefined = item['content:encoded'] || item.contentSnippet || item.content;
+          console.log(dirtyContent);
+          let title = item.title;
+          if (!dirtyContent || !title) {
+            throw new Error('RSS - Empty content and/or title.');
+          }
+          let content: string = htmlToText.fromString(dirtyContent, {
             wordwrap: false,
             ignoreHref: true,
             ignoreImage: true,
@@ -30,11 +39,6 @@ class NewsRssService implements NewsService {
             uppercaseHeadings: false,
             singleNewLineParagraphs: true,
           });
-          let content: string | undefined = contentEncoded || item.contentSnippet || item.content;
-          let title = item.title;
-          if (!content || !title) {
-            throw new Error('RSS - Empty content and/or title.');
-          }
           subscriber.next({
             title: title,
             content: content,
