@@ -2,6 +2,7 @@ import comprehend from '../clients/comprehend.client';
 import _ from 'lodash';
 import { logger } from '../utils/logger.util';
 import { BatchDetectSentimentItemResult } from 'aws-sdk/clients/comprehend';
+import weakTrim from '../utils/weakTrim';
 
 interface SentimentRequest {
   text: string;
@@ -14,12 +15,14 @@ let timeoutToken: ReturnType<typeof setTimeout> | undefined = undefined;
 const WAIT_MS_BEFORE_SENDING = 1000;
 const MAX_BATCH_BUFFER_SIZE = 25;
 const COMPREHEND_QUOTA_PER_SECOND = 10;
+const MAX_CHAR_LIMIT = 2000;
 
 async function analyzeText(text: string): Promise<number> {
   // logger.debug('Analysing text');
+  const textToAnalyze = weakTrim(text, MAX_CHAR_LIMIT);
   return new Promise((res, rej) => {
     sendForProcessing({
-      text: text,
+      text: textToAnalyze,
       onDone: e => res(e),
       onError: err => rej(err),
     });
