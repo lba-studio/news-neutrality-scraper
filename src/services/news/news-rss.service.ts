@@ -13,7 +13,7 @@ class NewsRssService implements NewsService {
     readonly sourceName: string,
     readonly sourceCountry: string,
   ) {
-    this.sourceId = `rss-${this.sourceUrl.replace(/^https?:\/\//, '')}`; // prettified really
+    this.sourceId = `rss-${this.sourceName.toLowerCase()}-${this.sourceCountry}`; // prettified really
   }
 
   getNewsObservable() {
