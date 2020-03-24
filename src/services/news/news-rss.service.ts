@@ -7,14 +7,13 @@ import htmlToText from 'html-to-text';
 const parser = new Parser();
 
 class NewsRssService implements NewsService {
-  readonly sourceId: string;
   constructor(
     readonly sourceUrl: string,
     readonly sourceName: string,
     readonly sourceCountry: string,
-  ) {
-    this.sourceId = `rss-${this.sourceName.toLowerCase()}-${this.sourceCountry}`; // prettified really
-  }
+    readonly sourceId: string,
+    private maxItems: number = 50,
+  ) { }
 
   getNewsObservable() {
     return new Observable<News>(subscriber => {
@@ -24,9 +23,12 @@ class NewsRssService implements NewsService {
         if (!feed.items) {
           throw new Error('RSS - Empty items!');
         }
-        feed.items.forEach(item => {
+        let items = feed.items;
+        if (this.maxItems) {
+          items = items.slice(0, this.maxItems);
+        }
+        items.forEach(item => {
           let dirtyContent: string | undefined = item['content:encoded'] || item.contentSnippet || item.content;
-          console.log(dirtyContent);
           let title = item.title;
           if (!dirtyContent || !title) {
             throw new Error('RSS - Empty content and/or title.');
