@@ -63,7 +63,7 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
     (async () => {
       let data: NewsApiResponse;
       let pageNumber = 1;
-      const pageSize = 100;
+      const pageSize = 50; // max is 100, but after 50 it's not too relevant
       do {
         data = await NewsApiService.getNewsFromSource({
           sources: sources.join(','),
