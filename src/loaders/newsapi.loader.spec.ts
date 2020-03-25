@@ -1,10 +1,12 @@
-import './setupTest';
+import '../utils/setupTest';
 import sinon from 'sinon';
-import { NewsApiService, NewsApiSource } from '../services/news/newsapi.service';
-import loadNewsServicesToAnalyze from './loadNewsServicesToAnalyze';
+import NewsApiService, { NewsApiSource } from '../services/news/newsapi.service';
 import { expect } from 'chai';
+import newsApiServiceLoader from './newsapi.loader';
+import { Observable } from 'rxjs';
+import { NewsService } from '../services/news';
 
-describe('loadNewsServicesToAnalyze', () => {
+describe('newsapi.loader', () => {
   it('should load news services successfully and filter by country and language', async () => {
     sinon.stub(NewsApiService, 'getSources').callsFake((): Promise<Array<NewsApiSource>> => {
       return Promise.resolve([
@@ -42,7 +44,9 @@ describe('loadNewsServicesToAnalyze', () => {
         }
       ]);
     });
-    const newsServices$ = loadNewsServicesToAnalyze();
+    const newsServices$ = new Observable<NewsService>(subscriber => {
+      newsApiServiceLoader(subscriber).then(() => subscriber.complete()).catch(e => subscriber.error(e));
+    });
     await newsServices$.forEach(newsService => {
       expect(['au', 'us']).to.include(newsService.sourceCountry);
       expect(['test1', 'test2', 'test3']).to.include(newsService.sourceId); // tests the language

@@ -9,12 +9,12 @@ export interface NewsSourceScore {
   name: string;
   country: string;
   lastUpdatedMs: number;
-};
+}
 
 const TABLE_NAME = config.db.tableNames.newsSources;
 
 export const NewsSourceRepository = {
-  get: async (id: string, consistentRead: boolean = false): Promise<NewsSourceScore | undefined> => {
+  get: async (id: string, consistentRead = false): Promise<NewsSourceScore | undefined> => {
     return dynamoDbDocClient.get({
       TableName: TABLE_NAME,
       Key: {

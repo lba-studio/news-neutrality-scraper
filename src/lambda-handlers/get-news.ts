@@ -1,4 +1,4 @@
-import { APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
+import { APIGatewayProxyHandler } from "aws-lambda";
 import { NewsSourceRepository } from "../repositories/news-sources.repository";
 import { handleError, injectCors } from "../helpers/lambda.helper";
 

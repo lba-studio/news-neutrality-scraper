@@ -2,11 +2,12 @@ import comprehend from '../clients/comprehend.client';
 import _ from 'lodash';
 import { logger } from '../utils/logger.util';
 import { BatchDetectSentimentItemResult } from 'aws-sdk/clients/comprehend';
+import weakTrim from '../utils/weakTrim';
 
 interface SentimentRequest {
   text: string;
-  onDone: (result: number) => any;
-  onError: (e: any) => any;
+  onDone: (result: number) => void;
+  onError: (e: any) => void;
 }
 
 let batchBuffer: Array<SentimentRequest> = [];
@@ -14,16 +15,13 @@ let timeoutToken: ReturnType<typeof setTimeout> | undefined = undefined;
 const WAIT_MS_BEFORE_SENDING = 1000;
 const MAX_BATCH_BUFFER_SIZE = 25;
 const COMPREHEND_QUOTA_PER_SECOND = 10;
+const MAX_CHAR_LIMIT = 2000;
 
-async function analyzeText(text: string): Promise<number> {
-  // logger.debug('Analysing text');
-  return new Promise((res, rej) => {
-    sendForProcessing({
-      text: text,
-      onDone: e => res(e),
-      onError: err => rej(err),
-    });
-  });
+function computeScore(result: BatchDetectSentimentItemResult): number {
+  const positive = _.get(result, 'SentimentScore.Positive');
+  const negative = _.get(result, 'SentimentScore.Negative');
+  const score = positive - negative;
+  return score;
 }
 
 function clearTimeoutToken() {
@@ -79,14 +77,6 @@ async function dispatch() {
   }
 }
 
-function computeScore(result: BatchDetectSentimentItemResult): number {
-  const positive = _.get(result, 'SentimentScore.Positive');
-  const negative = _.get(result, 'SentimentScore.Negative');
-  const score = positive - negative;
-  return score;
-}
-
-
 async function sendForProcessing(sentimentRequest: SentimentRequest) {
   clearTimeoutToken();
   batchBuffer.push(sentimentRequest);
@@ -95,6 +85,18 @@ async function sendForProcessing(sentimentRequest: SentimentRequest) {
       dispatch();
     }, WAIT_MS_BEFORE_SENDING);
   }
+}
+
+async function analyzeText(text: string): Promise<number> {
+  // logger.debug('Analysing text');
+  const textToAnalyze = weakTrim(text, MAX_CHAR_LIMIT);
+  return new Promise((res, rej) => {
+    sendForProcessing({
+      text: textToAnalyze,
+      onDone: e => res(e),
+      onError: err => rej(err),
+    });
+  });
 }
 
 export default { analyzeText };

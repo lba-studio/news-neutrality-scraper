@@ -1,4 +1,4 @@
-import { APIGatewayProxyHandler, APIGatewayProxyResult, APIGatewayProxyEvent, Context, Callback } from "aws-lambda";
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
 import { logger } from "../utils/logger.util";
 
 function checkIfResultIsEmpty(result: void | APIGatewayProxyResult): APIGatewayProxyResult {
@@ -9,7 +9,7 @@ function checkIfResultIsEmpty(result: void | APIGatewayProxyResult): APIGatewayP
 }
 
 export function handleError(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
-  return async (...args) => {
+  return async (...args): Promise<APIGatewayProxyResult> => {
     try {
       const result = checkIfResultIsEmpty(await func(...args));
       return result;
@@ -29,7 +29,7 @@ export function handleError(func: APIGatewayProxyHandler): APIGatewayProxyHandle
 }
 
 export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
-  return async (...args) => {
+  return async (...args): Promise<APIGatewayProxyResult> => {
     const result = checkIfResultIsEmpty(await func(...args));
     return {
       ...result,
@@ -41,7 +41,7 @@ export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler
 }
 
 export function defaultApiResponseHandler(func: Function, statusCode?: number): APIGatewayProxyHandler {
-  return handleError(injectCors(async (...args) => {
+  return handleError(injectCors(async () => {
     const result = await func();
     if (!result) {
       return {

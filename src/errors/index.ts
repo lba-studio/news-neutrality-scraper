@@ -1,1 +1,1 @@
-export class NewsApiError extends Error {};
+export class NewsApiError extends Error {}

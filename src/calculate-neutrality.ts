@@ -5,7 +5,7 @@ import { NewsSourceRepository, NewsSourceScore } from "./repositories/news-sourc
 import { map, concatAll, filter } from 'rxjs/operators';
 import { config } from './config';
 import { defaultApiResponseHandler } from "./helpers/lambda.helper";
-import loadNewsServicesToAnalyze from "./utils/loadNewsServicesToAnalyze";
+import loaders from "./loaders";
 
 async function retrieveScoreFromNewsService(newsService: NewsService): Promise<number | undefined> {
   let avgScore: number | undefined = undefined;
@@ -28,8 +28,8 @@ async function retrieveScoreFromNewsService(newsService: NewsService): Promise<n
     } else {
       avgScore = (avgScore + score) / 2;
     }
-    logger.debug(`${counter} texts analyzed! Avg score: ${avgScore}`);
     counter += 1;
+    logger.debug(`${counter} texts analyzed! Avg score: ${avgScore}`);
   }).catch(e => logger.error(e));
   return avgScore;
 }
@@ -39,7 +39,7 @@ export async function calculateNeutrality() {
   // get timestamp
   const timeStampMs = Date.now();
   logger.info('Calculating neutrality...');
-  await loadNewsServicesToAnalyze().pipe(
+  await loaders.loadNewsServicesToAnalyze().pipe(
     map(async newsService => {
       logger.debug(`Analysing news: ${newsService.sourceUrl}.`);
       let score: number;
