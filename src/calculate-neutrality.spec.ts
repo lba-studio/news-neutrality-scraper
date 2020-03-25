@@ -3,11 +3,10 @@ import './utils/setupTest';
 import * as calculateNeutrality from './calculate-neutrality';
 import loaders from './loaders';
 import sinon from 'sinon';
-import { NewsService, News } from './services/news';
+import { NewsService } from './services/news';
 import { Observable } from 'rxjs';
 import sentimentAnalyzerService from './services/sentiment-analyzer.service';
-import { NewsSourceRepository, NewsSourceScore } from './repositories/news-sources.repository';
-import { expect } from 'chai';
+import { NewsSourceRepository } from './repositories/news-sources.repository';
 
 describe('calculate-neutrality', () => {
   beforeEach(() => {
@@ -36,7 +35,7 @@ describe('calculate-neutrality', () => {
         subscriber.complete();
       });
     });
-    sinon.stub(sentimentAnalyzerService, 'analyzeText').callsFake(async (text) => expectedScore);
+    sinon.stub(sentimentAnalyzerService, 'analyzeText').callsFake(async () => expectedScore);
     const putStub = sinon.stub(NewsSourceRepository, 'put');
     await calculateNeutrality.calculateNeutrality();
     sinon.assert.calledOnceWithExactly(putStub, sinon.match({

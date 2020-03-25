@@ -2,26 +2,26 @@ import axios from 'axios';
 import { config } from '../../config';
 import { NewsApiError } from '../../errors';
 import { News, NewsService } from '.';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { logger } from '../../utils/logger.util';
 
 export interface NewsApiResponse {
   status: string;
   totalResults: number;
-  articles: Array<NewsApiArticle>
-};
+  articles: Array<NewsApiArticle>;
+}
 
 export interface NewsApiArticle {
   source: {
     id?: string;
     name: string;
-  },
+  };
   author?: string;
   title: string;
   description?: string;
   url: string;
   content?: string;
-};
+}
 
 export interface NewsApiSource {
   id: string;
@@ -30,14 +30,14 @@ export interface NewsApiSource {
   url: string;
   country: string;
   language: string;
-};
+}
 
 interface NewsApiQueryParam {
   domains?: string; // delimited by ,
   sources?: string; // delimited by ,
   pageSize?: number;
   page?: number;
-};
+}
 
 const url = config.newsApi.url;
 const apiKey = config.newsApi.apiKey;
@@ -65,7 +65,7 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
       let pageNumber = 1;
       const pageSize = 50; // max is 100, but after 50 it's not too relevant
       do {
-        data = await NewsApiService.getNewsFromSource({
+        data = await getNewsFromSource({
           sources: sources.join(','),
           page: pageNumber++,
           pageSize: pageSize,
@@ -120,4 +120,4 @@ export async function getSources(country?: string): Promise<Array<NewsApiSource>
   });
 }
 
-export const NewsApiService = { getNewsFromSource, getNewsApiObservableForDomains, getSources };
+export default { craftNewsServiceFromNewsApiSource, getNewsFromSource, getNewsApiObservableForDomains, getSources };

@@ -2,8 +2,15 @@ import { NewsService } from "../services/news";
 import NewsRssService from "../services/news/news-rss.service";
 import { Subscriber } from "rxjs";
 
+interface RssFeedInfo { 
+  sourceName: string;
+  sourceUrl: string; 
+  sourceCountry: string; 
+  sourceId: string; 
+}
+
 async function rssNewsServiceLoader(subscriber: Subscriber<NewsService>) {
-  const rssFeeds: Array<{ sourceName: string, sourceUrl: string, sourceCountry: string, sourceId: string }> = [
+  const rssFeeds: Array<RssFeedInfo> = [
     {
       sourceUrl: 'http://www.sbs.com.au/news/rss/Section/Top+Stories',
       sourceName: 'SBS',

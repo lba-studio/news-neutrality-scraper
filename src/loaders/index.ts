@@ -3,7 +3,7 @@ import { NewsService } from '../services/news';
 import newsApiServiceLoader from './newsapi.loader';
 import rssNewsServiceLoader from './rss.loader';
 
-export type NewsServiceLoader = (subscriber: Subscriber<NewsService>) => Promise<any> | any;
+export type NewsServiceLoader = (subscriber: Subscriber<NewsService>) => Promise<void> | void;
 
 const loaders: Array<NewsServiceLoader> = [
   // add any loaders here

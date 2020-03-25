@@ -1,6 +1,6 @@
 import { config } from "../config";
 import { logger } from "../utils/logger.util";
-import { NewsApiService, NewsApiSource, craftNewsServiceFromNewsApiSource } from "../services/news/newsapi.service";
+import NewsApiService, { NewsApiSource } from "../services/news/newsapi.service";
 import { NewsService } from "../services/news";
 import { Subscriber } from "rxjs";
 
@@ -38,7 +38,7 @@ async function newsApiServiceLoader(subscriber: Subscriber<NewsService>) {
     sourcesToLookFor = sourcesToLookFor.slice(0, sourceLimit);
   }
   logger.debug(`Loaded ${sourcesToLookFor.length} sources from NewsAPI.org.`);
-  sourcesToLookFor.forEach(source => subscriber.next(craftNewsServiceFromNewsApiSource(source)));
-};
+  sourcesToLookFor.forEach(source => subscriber.next(NewsApiService.craftNewsServiceFromNewsApiSource(source)));
+}
 
 export default newsApiServiceLoader;
