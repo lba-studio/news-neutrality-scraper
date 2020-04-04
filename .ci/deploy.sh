@@ -1,18 +1,21 @@
-set -xe
+set -e
 
 [ -z "$1" ] && echo "Please pass in the environment name as an argument (e.g. \"./.ci/deploy.sh prod\")"  && exit 1
 
-npm run lint
-npm run clean
-npm run build
+# npm run lint
+# npm run clean
+# npm run build
 
 TEMPLATE_FILENAME="template.yaml"
 PACKAGED_TEMPLATE_FILENAME="packaged.yaml"
 S3_BUCKET_NAME="nodescrape-$1"
 STACK_NAME="nodescrape-$1"
 AWSCLI_ARGS="" # used to be --profile $1
-PARAMETER_CONFIG_PATH="./.ci/$1.yaml"
-PARAMETER_OVERRIDES_ARG="--parameter-overrides `sed -e '/#.*/d;s/: */=/;s/\r//g;s/$//g' $PARAMETER_CONFIG_PATH`"
+# PARAMETER_CONFIG_PATH="./.ci/$1.yaml"
+# PARAMETER_OVERRIDES_ARG="--parameter-overrides `sed -e '/#.*/d;s/: */=/;s/\r//g;s/$//g' $PARAMETER_CONFIG_PATH`"
+PARAMETER_OVERRIDES_ARG="--parameter-overrides \
+NewsApiApikey=$NODESCRAPE_NEWSAPI_APIKEY \
+LogLevel=INFO"
 
 echo "---Deployment Config---"
 echo "TEMPLATE_FILENAME=$TEMPLATE_FILENAME"
@@ -20,7 +23,6 @@ echo "PACKAGED_TEMPLATE_FILENAME=$PACKAGED_TEMPLATE_FILENAME"
 echo "S3_BUCKET_NAME=$S3_BUCKET_NAME"
 echo "STACK_NAME=$STACK_NAME"
 echo "AWSCLI_ARGS=$AWSCLI_ARGS"
-echo $PARAMETER_OVERRIDES_ARG
 
 # check bucket exists
 if aws s3 ls "$S3_BUCKET_NAME" $AWSCLI_ARGS > /dev/null

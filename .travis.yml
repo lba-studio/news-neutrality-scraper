@@ -1,0 +1,42 @@
+# sudo: required
+language: python
+# cache: npm
+env:
+  # AWS
+  - secure: "KQyK9ZCvR7bqao82jg75BesyzySyjf3s16RlADiSXctQ7xawSj50YsWVUjPTEA5J2dq/Tv2hlhU0AhJPdQpjqTediKUF1tELfYNvyhbZqHv3YOwxd5IkM6r81IQGuy2UWjSYpH8au8oA64PT95AYagDap5KFsMpU25VOMbaWWh4WhPl7wuoPNunVeb3pLpv2ioGNS2MRscqOm/Cjc9zPcihBEB8LhTcy1ilVUWxxCi0GcrY+JmfbIeSZXzuXZE0uXlCpKK/bqibuwaEp9j1RobIwAW0pCaQxgpfFUoJCOlEjl9LIhHn7CF5ioIidVLoy1q3OdZieYNqPysyFzCiX40unMaE3sB96gtOi4JN2zr8xTcntP4DItLwxTcn8eHppKsot+7UuA8PYD0cmjspsyU+KpnwSkRTC3RmJHToBFcOmNkZ5yxMVqg9cNoCEgYmrZVgTXFkeNR4d3QGEiMPxWOs/wYf6CYihApFGUQOqIhp1ee93YaCPYNBZ7FFZKVSwrsdllJGWspTcX7gX+XneHvL+lnkkh5F73BoSO73+sJv/B6xyjPGuzVKGSlHaBxZplQdmhySZXcgnalYZ+ZY8KGRskCw5cTojl/nbQfSkJsl7yhNNQuY5iLWkQGT0hFM4osoK91icqu+oEyZe6dU/KoiCib3/LGHTGqQBbNa51e8="
+  - secure: "jGCBp/ROZdUZzyeGu8sPq6C+knZeWwvlOEg5IL1PJC+aE9MHh4aVBWhJ/oWk1bn7L8KHZbRX/8/Z0VZ/CksLdz10bU8MUcA8h3cJ5O6xrTY0Uoagq6rrQjzQWOFClidI08+Kn2Szlx8jHs+91a7gtbf+qGyW56J/2Q96ELReomCgVi1q5sDeR0QAhybmJw0ZUPK82ke+xJbARQLtpNFG6I+Plf4S5LO5ftsOoIHMdh4X2y6pp22FQbvpaoxqjRhS8oZk098U/kx/qLbUfZ+oEIglBB0rx6Wyu1Irno1sMSFFx2RWiYi7kyRzqMTo1/5BBMrODXexYq6TQhIiptgsj/T3QNiE/eWB6j2/pIHF0/L6wp/Z/2pZ4DWb3z5JIXcijGlSnajUNafTERiTej8iqGYqbp3RWy+VRMn0zxP6nMBO1PDEr+wY+rzPCulTuX/TLbcrbYb67f7OqevNEljkQg38ZrAhewKivFaFg7Ago7rN+CODrG6ym0u7Dvx1kbu0Q1Vj9iIJPV8ul19xaPgQMvPyyg33/f0BhWNRMMh7zvTBQnMB59yhDS2e4Oe81yg+qFK+LenuKz+C3HzmFqqKq6+Chra+0sCazTfLSlWf8uXvs5DI/T/t4dvR2QkqTLjEDYJ3whkKZqhhcv+/cHibx3qupunzYQNqEkY8B00rE2k="
+  # Parameter-Overrides
+  - secure: "o6VA8iOVIePkMRB9Aj/n1JTErytGeWBuo1Oo+izsHI0cplbaqng8uPnfzXMwvVk5JE+ST/aZiIiGhV8zEnJJw9JtxwilLA+DtO+lMl7SorSrLG426UhozNP2laQ5CCoGpswXSTJdtQGlH5yjCu7FkFmRAZawOXUbhdy9TUOYPUb+Mmg6vdVt/Ho+BnILt0f2J0dt81U2SoqADSlTELDxIKBDRpPebpP+atIyR3AMUYOLdBF0mY18vqY2P/Ist+ueEr6xWdeytQsaFa5Ac1HqUuxLnJN54lNWNeQv3/odTDWrawq3lLLfugRmDS9O/OZpUVC7sGlXG8QWNu9O9QKgH8cb6ZZHUxkGKLR8v9rlrJqGtttY1M3Xgo7+XktCGSdlrbbtUBm4+EtXz3L/pszWbK+768O/55/ATXq1abnrnXxQ8seowNCh3BuTeTyP9VKqBUs/S88nJxmguixyFKjyJo4UM0It6/hWS0ZmSCL1n8q1qz8G/0Z9FjF0u93dN3BqScryMVIfD7pRDXbTO8Bl5wRXafMm+a16c3uhZN1nfwicsy95znY4NTTkDplPv38uKPwXoXu2w+VWqwm7GpBS6U8MQABlpmiBfQkSDBWyx0VJ8m31pDwZdan7OvIQd6Vj0wJyhI+lBMSfwL80uM63UUrPNaYBkgvsRdwGodsFfZo="
+python:
+  - '3.7'
+branches:
+  only:
+    - master
+install:
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+  - nvm install 12
+  - nvm use 12
+  - node --version
+  - pip install awscli aws-sam-cli --upgrade
+jobs:
+  include:
+    - stage: lint
+      script:
+        - npm run lint
+    - stage: build
+      script: 
+        - npm run clean
+        - npm run build
+    - stage: deploy
+      script: 
+        - ./.ci/deploy.sh prod
+      branches:
+        only:
+          - master
+before_script:
+  - openssl aes-256-cbc -K $encrypted_7912a2028aee_key -iv $encrypted_7912a2028aee_iv -in prod.yaml.enc -out prod.yaml -d
+script:
+  - npm run lint
+  - npm run clean
+  - npm run build
+  - ./.ci/deploy.sh prod
