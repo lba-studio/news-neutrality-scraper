@@ -12,6 +12,7 @@ install:
   - nvm use 12
   - node --version
   - pip install awscli aws-sam-cli --upgrade
+  - npm ci
 jobs:
   include:
     - stage: lint
