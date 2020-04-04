@@ -18,21 +18,21 @@ install:
   - nvm use 12
   - node --version
   - pip install awscli aws-sam-cli --upgrade
-jobs:
-  include:
-    - stage: lint
-      script:
-        - npm run lint
-    - stage: build
-      script: 
-        - npm run clean
-        - npm run build
-    - stage: deploy
-      script: 
-        - ./.ci/deploy.sh prod
-      branches:
-        only:
-          - master
+# jobs:
+#   include:
+#     - stage: lint
+#       script:
+#         - npm run lint
+#     - stage: build
+#       script: 
+#         - npm run clean
+#         - npm run build
+#     - stage: deploy
+#       script: 
+#         - ./.ci/deploy.sh prod
+#       branches:
+#         only:
+#           - master
 before_script:
   - openssl aes-256-cbc -K $encrypted_7912a2028aee_key -iv $encrypted_7912a2028aee_iv -in prod.yaml.enc -out prod.yaml -d
 script:
