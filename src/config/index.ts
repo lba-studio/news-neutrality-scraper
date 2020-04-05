@@ -19,11 +19,11 @@ if (SHOULD_SKIP_VALIDATION) {
   console.warn('WARN: NODESCRAPE_SKIP_ENV_VALIDATION is set to true. Env var validations will be skipped.');
 }
 
-function getRequiredEnvironmentVariable(envVarKey: string, shouldThrowWhenMissing = SHOULD_SKIP_VALIDATION): string {
+function getRequiredEnvironmentVariable(envVarKey: string, shouldSkipValidation = SHOULD_SKIP_VALIDATION): string {
   let envVar = process.env[envVarKey];
   if (envVar === undefined) {
     const errorMessage = `Missing environment variable: ${envVarKey}`;
-    if (shouldThrowWhenMissing) {
+    if (!shouldSkipValidation) {
       throw new Error(errorMessage);
     } else {
       console.warn('WARN:', errorMessage);
