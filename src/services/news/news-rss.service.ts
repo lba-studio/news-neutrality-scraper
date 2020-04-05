@@ -7,11 +7,14 @@ import htmlToText from 'html-to-text';
 const parser = new Parser();
 
 class NewsRssService implements NewsService {
+  readonly sourceProvider = 'RSS Feed Scraper';
+  
   constructor(
-    readonly sourceUrl: string,
+    readonly rssFeedUrl: string,
     readonly sourceName: string,
     readonly sourceCountry: string,
     readonly sourceId: string,
+    readonly sourceUrl: string,
     private maxItems: number = 50,
   ) { }
 
