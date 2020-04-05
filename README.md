@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/verzac/news-neutrality-scraper.svg?branch=master)](https://travis-ci.org/verzac/news-neutrality-scraper)
+
 ```
 NOTE: Keep in mind that this project is a work in progress. Things may change drastically as the project stabilises.
 ```
