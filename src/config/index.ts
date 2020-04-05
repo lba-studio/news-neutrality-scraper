@@ -7,16 +7,29 @@ if (result.error) {
   console.warn(`Cannot load .env file: ${result.error.message}`);
 }
 
-function getRequiredEnvironmentVariable(envVarKey: string): string {
-  let envVar = process.env[envVarKey];
-  if (envVar === undefined) {
-    throw new Error(`Missing environment variable: ${envVarKey}`);
-  }
-  return envVar;
-}
 
 function toBoolean(envVar?: string): boolean {
   return envVar === 'true';
+}
+
+// added because env vars should not be necessary for tests
+const SHOULD_SKIP_VALIDATION = toBoolean(process.env.NODESCRAPE_SKIP_ENV_VALIDATION);
+
+if (SHOULD_SKIP_VALIDATION) {
+  console.warn('WARN: NODESCRAPE_SKIP_ENV_VALIDATION is set to true. Env var validations will be skipped.');
+}
+
+function getRequiredEnvironmentVariable(envVarKey: string, shouldThrowWhenMissing = SHOULD_SKIP_VALIDATION): string {
+  let envVar = process.env[envVarKey];
+  if (envVar === undefined) {
+    const errorMessage = `Missing environment variable: ${envVarKey}`;
+    if (shouldThrowWhenMissing) {
+      throw new Error(errorMessage);
+    } else {
+      console.warn('WARN:', errorMessage);
+    }
+  }
+  return envVar as string;
 }
 
 export const config = {

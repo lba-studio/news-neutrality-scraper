@@ -23,6 +23,7 @@ jobs:
       script:
         - npm run lint
     - script: npm run test
+      env: NODESCRAPE_SKIP_ENV_VALIDATION=true
     - script: npm run build
     - stage: deploy
       script: 
