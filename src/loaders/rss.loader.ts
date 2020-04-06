@@ -6,49 +6,56 @@ interface RssFeedInfo {
   sourceName: string;
   sourceUrl: string; 
   sourceCountry: string; 
-  sourceId: string; 
+  sourceId: string;
+  rssFeedUrl: string;
 }
 
 async function rssNewsServiceLoader(subscriber: Subscriber<NewsService>) {
   const rssFeeds: Array<RssFeedInfo> = [
     {
-      sourceUrl: 'http://www.sbs.com.au/news/rss/Section/Top+Stories',
+      rssFeedUrl: 'http://www.sbs.com.au/news/rss/Section/Top+Stories',
       sourceName: 'SBS',
       sourceId: 'sbs-au',
       sourceCountry: 'au',
+      sourceUrl: 'http://www.sbs.com.au',
     },
     {
-      sourceUrl: 'http://www.9news.com.au/rss',
+      rssFeedUrl: 'http://www.9news.com.au/rss',
       sourceName: '9News',
       sourceId: '9news-au',
       sourceCountry: 'au',
+      sourceUrl: 'http://www.9news.com.au'
     },
     {
+      sourceUrl: 'https://news.com.au',
       sourceName: 'news.com.au',
       sourceCountry: 'au',
       sourceId: 'news.com.au-au',
-      sourceUrl: 'https://www.news.com.au/content-feeds/latest-news-national/'
+      rssFeedUrl: 'https://www.news.com.au/content-feeds/latest-news-national/'
     },
     {
       sourceName: 'Sydney Morning Herald (SMH)',
       sourceCountry: 'au',
-      sourceUrl: 'https://www.smh.com.au/rss/feed.xml',
+      rssFeedUrl: 'https://www.smh.com.au/rss/feed.xml',
       sourceId: 'smh-au',
+      sourceUrl: 'https://www.smh.com.au'
     },
     {
+      sourceUrl: 'https://www.theage.com.au',
       sourceName: 'The Age',
       sourceCountry: 'au',
-      sourceUrl: 'https://www.theage.com.au/rss/feed.xml',
+      rssFeedUrl: 'https://www.theage.com.au/rss/feed.xml',
       sourceId: 'theage-au',
     },
     {
+      sourceUrl: 'http://www.heraldsun.com.au',
       sourceName: 'Herald Sun',
       sourceCountry: 'au',
-      sourceUrl: 'http://www.heraldsun.com.au/news/breaking-news/rss',
+      rssFeedUrl: 'http://www.heraldsun.com.au/news/breaking-news/rss',
       sourceId: 'heraldsun-au'
     },
   ];
-  rssFeeds.forEach(rssFeed => subscriber.next(new NewsRssService(rssFeed.sourceUrl, rssFeed.sourceName, rssFeed.sourceCountry, rssFeed.sourceId)));
+  rssFeeds.forEach(rssFeed => subscriber.next(new NewsRssService(rssFeed.rssFeedUrl, rssFeed.sourceName, rssFeed.sourceCountry, rssFeed.sourceId, rssFeed.sourceUrl)));
 }
 
 export default rssNewsServiceLoader;
