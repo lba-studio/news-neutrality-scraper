@@ -19,7 +19,7 @@ Aggregates the sentiment analysis score of news articles from various news sourc
 pip install awscli aws-sam-cli
 
 # Running a local version of DynamoDB (which is the main datastore of this service)
-docker run -p 8000:8000 amazon/dynamodb-local -d
+docker run -p 8000:8000 -d amazon/dynamodb-local
 
 # Dependency install
 npm install
