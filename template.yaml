@@ -92,9 +92,17 @@ Resources:
               Parameters:
                 Location: ./src/config/dynamo-schemas/news-sources.schema.json
 
+    InitFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/
+            Handler: init.handler
+            Runtime: nodejs12.x
+            Timeout: 30
+
 Outputs:
 
-    HelloWorldApi:
-      Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/disruptions-count"
+    BaseUrl:
+      Description: "The base URL of the service."
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../clients/axios.client';
 import { config } from '../../config';
 import { NewsApiError } from '../../errors';
 import { News, NewsService } from '.';

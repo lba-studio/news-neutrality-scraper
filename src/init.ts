@@ -24,10 +24,13 @@ async function main() {
   await initDynamoDb();
   logger.info('Init done!');
 }
+if (!module.parent) {
+  main()
+    .then(() => logger.info('Initialization completed.'))
+    .catch(e => {
+      logger.error(e);
+      process.exit(1);
+    });
+}
 
-main()
-  .then(() => logger.info('Initialization completed.'))
-  .catch(e => {
-    logger.error(e);
-    process.exit(1);
-  });
+export const handler = main;

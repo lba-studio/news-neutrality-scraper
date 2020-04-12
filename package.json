@@ -10,6 +10,7 @@
     "html-to-text": "^5.1.1",
     "lodash": "^4.17.15",
     "loglevel": "^1.6.7",
+    "retry-axios": "^2.1.2",
     "rss-parser": "^3.7.6",
     "rxjs": "^6.5.4",
     "typescript": "^3.8.3"
@@ -43,8 +44,7 @@
     "start": "concurrently --kill-others --kill-others-on-fail \"npm run build-watch\" \"docker pull lambci/lambda:nodejs12.x && sam local start-api -p 3001 --skip-pull-image --template ./template.yaml\"",
     "scrape": "npm run prestart && ts-node -r dotenv/config ./src/calculate-neutrality.ts",
     "test": "mocha --require ts-node/register ./src/**/*.spec.ts",
-    "prestart": "ts-node -r dotenv/config src/init.ts",
-    "start-api": "ts-node -r dotenv/config src/api.ts",
+    "prestart": "sam local invoke InitFunction --no-event",
     "lint": "eslint src/**/*.ts"
   },
   "author": "",

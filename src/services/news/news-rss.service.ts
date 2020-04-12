@@ -1,7 +1,7 @@
 import Parser from 'rss-parser';
 import { NewsService, News } from '.';
 import { Observable } from 'rxjs';
-import axios from 'axios';
+import axios from '../../clients/axios.client';
 import htmlToText from 'html-to-text';
 
 const parser = new Parser();
@@ -21,7 +21,7 @@ class NewsRssService implements NewsService {
   getNewsObservable() {
     return new Observable<News>(subscriber => {
       (async () => {
-        let data = await axios.get(this.sourceUrl).then(e => e.data);
+        let data = await axios.get(this.rssFeedUrl).then(e => e.data);
         let feed = await parser.parseString(data);
         if (!feed.items) {
           throw new Error('RSS - Empty items!');
