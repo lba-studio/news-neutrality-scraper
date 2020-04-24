@@ -21,7 +21,6 @@ Globals:
         Timeout: 10
         Environment:
             Variables:
-                LOCAL_DYNAMODB_ENDPOINT: "http://192.168.99.100:8000"
                 NODESCRAPE_LOG_LEVEL: !Ref LogLevel
                 NEWS_API_APIKEY: !Ref NewsApiApikey
                 NEWS_API_URL: !Ref NewsApiUrl
@@ -82,7 +81,22 @@ Resources:
             Policies:
                 - DynamoDBCrudPolicy:
                     TableName: !Ref NewsSourceTable 
-                - ComprehendBasicAccessPolicy: {}                   
+                - ComprehendBasicAccessPolicy: {}
+
+    GetTopicScoreFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/
+            Handler: lambda-handlers/search-topic.handler
+            Runtime: nodejs12.x
+            Events:
+                CalculateNeutralityApi:
+                    Type: Api
+                    Properties:
+                        Path: /search
+                        Method: get
+            Policies:
+                - ComprehendBasicAccessPolicy: {}         
 
     NewsSourceTable:
         Type: AWS::DynamoDB::Table
