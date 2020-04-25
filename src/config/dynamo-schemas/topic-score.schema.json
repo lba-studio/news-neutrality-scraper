@@ -1,0 +1,16 @@
+{
+  "TableName": "TopicScore",
+  "KeySchema": [
+      {
+          "AttributeName": "topic",
+          "KeyType": "HASH"
+      }
+  ],
+  "AttributeDefinitions": [
+      {
+          "AttributeName": "topic",
+          "AttributeType": "S"
+      }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}

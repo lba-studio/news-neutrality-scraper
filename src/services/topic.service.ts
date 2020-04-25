@@ -1,14 +1,15 @@
 import { News } from "./news";
 import sentimentAnalyzerService from "./sentiment-analyzer.service";
 import newsApiService from "./news/newsapi.service";
+import topicScoreRepository from "../repositories/topic-score.repository";
 
-export type GetTopicResult = { 
-  score: number | null; 
+export type GetTopicResult = {
+  score: number | null;
   newsArticlesAnalyzed: number;
   sampleAnalyzedArticles: Array<News>;
- };
+};
 
-async function getTopicScore(topic: string): Promise<GetTopicResult> {
+async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<GetTopicResult> {
   const newsArr = await newsApiService.getNews({
     q: topic,
     page: 1,
@@ -26,6 +27,12 @@ async function getTopicScore(topic: string): Promise<GetTopicResult> {
   }
   const numberOfNewsArticlesAnalyzed = newsScores.length + 1;
   const avgScore = newsScores.reduce((accumulator, score) => accumulator + score, firstScore) / numberOfNewsArticlesAnalyzed;
+  if (shouldStoreTopic) {
+    await topicScoreRepository.put({
+      score: avgScore,
+      topic: topic,
+    });
+  }
   return {
     score: avgScore,
     newsArticlesAnalyzed: numberOfNewsArticlesAnalyzed,
@@ -33,6 +40,6 @@ async function getTopicScore(topic: string): Promise<GetTopicResult> {
   };
 }
 
-export default { 
-  getTopicScore, 
+export default {
+  getTopicScore,
 };

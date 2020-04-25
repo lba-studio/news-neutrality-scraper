@@ -83,7 +83,7 @@ Resources:
                     TableName: !Ref NewsSourceTable 
                 - ComprehendBasicAccessPolicy: {}
 
-    GetTopicScoreFunction:
+    SearchTopicScoreFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: dist/
@@ -93,10 +93,28 @@ Resources:
                 CalculateNeutralityApi:
                     Type: Api
                     Properties:
-                        Path: /search
+                        Path: /topic-search
+                        Method: post
+            Policies:
+                - ComprehendBasicAccessPolicy: {}
+                - DynamoDBCrudPolicy:
+                    TableName: !Ref TopicScoreTable
+    
+    GetTopicScoreFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/
+            Handler: lambda-handlers/get-topic.getAllTopicScoresHandler
+            Runtime: nodejs12.x
+            Events:
+                CalculateNeutralityApi:
+                    Type: Api
+                    Properties:
+                        Path: /topics
                         Method: get
             Policies:
-                - ComprehendBasicAccessPolicy: {}         
+                - DynamoDBCrudPolicy:
+                    TableName: !Ref TopicScoreTable
 
     NewsSourceTable:
         Type: AWS::DynamoDB::Table
@@ -105,6 +123,18 @@ Resources:
               Name: AWS::Include
               Parameters:
                 Location: ./src/config/dynamo-schemas/news-sources.schema.json
+
+    TopicScoreTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            Fn::Transform:
+              Name: AWS::Include
+              Parameters:
+                Location: ./src/config/dynamo-schemas/topic-score.schema.json
+            TimeToLiveSpecification:
+              Enabled: true
+              AttributeName: "ttl"
+            
 
     InitFunction:
         Type: AWS::Serverless::Function
