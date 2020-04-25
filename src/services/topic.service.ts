@@ -13,7 +13,8 @@ async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<Ge
   const newsArr = await newsApiService.getNews({
     q: topic,
     page: 1,
-    pageSize: 50
+    pageSize: 50,
+    language: 'en',
   });
   const newsScores = await Promise.all(newsArr.map(news => sentimentAnalyzerService.analyzeText(news.content)));
   const firstScore = newsScores.pop();
