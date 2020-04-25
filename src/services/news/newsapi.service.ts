@@ -38,6 +38,7 @@ interface NewsApiQueryParam {
   pageSize?: number;
   page?: number;
   q?: string; // keywords or phrases to search for in the article title and body.
+  language?: string;
 }
 
 const url = config.newsApi.url;
