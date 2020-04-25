@@ -1,4 +1,4 @@
-import { NewsSourcesSchema } from "./config/dynamo-schemas";
+import { NewsSourcesSchema, TopicScoreSchema } from "./config/dynamo-schemas";
 import { logger } from "./utils/logger.util";
 import { baseDynamoDbClient } from "./clients/dynamodb.client";
 import { CreateTableInput } from "aws-sdk/clients/dynamodb";
@@ -8,7 +8,7 @@ async function createTable(input: CreateTableInput) {
     .catch(e => {
       if (e.code === 'ResourceInUseException') {
         logger.info(`Table ${input.TableName} already exists. Skipping.`)
-        logger.debug(e);
+        // logger.debug(e);
       } else {
         throw e;
       }
@@ -18,6 +18,7 @@ async function createTable(input: CreateTableInput) {
 async function initDynamoDb() {
   logger.info('Initialising DynamoDB table...');
   await createTable(NewsSourcesSchema);
+  await createTable(TopicScoreSchema);
 }
 
 async function main() {

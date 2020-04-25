@@ -37,6 +37,7 @@ interface NewsApiQueryParam {
   sources?: string; // delimited by ,
   pageSize?: number;
   page?: number;
+  q?: string; // keywords or phrases to search for in the article title and body.
 }
 
 const url = config.newsApi.url;
@@ -58,6 +59,26 @@ export async function getNewsFromSource(params?: NewsApiQueryParam): Promise<New
     });
 }
 
+function toNews(article: NewsApiArticle): News {
+  const content = article.description || article.content;
+  const title = article.title;
+  if (!content || !title) {
+    console.dir(article, { depth: null });
+    throw new Error(`Empty content or title!`);
+  }
+  return {
+    content: content,
+    title: title,
+  };
+}
+
+export async function getNews(params: NewsApiQueryParam): Promise<Array<News>> {
+  const result = await getNewsFromSource(params)
+  return result.articles
+    .filter(article => article.content && article.description && article.title)
+    .map(toNews);
+}
+
 export function getNewsApiObservableForDomains(sources: Array<string>): Observable<News> {
   return new Observable(subscriber => {
     (async () => {
@@ -71,20 +92,16 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
           pageSize: pageSize,
         });
         data.articles.forEach(article => {
-          let content = article.description || article.content;
-          let title = article.title;
-          if (!content || !title) {
-            console.dir(article, { depth: null });
-            throw new Error(`Empty content or title for source ${sources.toString()}!`);
+          try {
+            const news = toNews(article);
+            subscriber.next(news);
+          } catch (e) {
+            throw new Error(`Sources: ${sources} | ${e.message || JSON.stringify(e)}`)
           }
-          subscriber.next({
-            content: content,
-            title: title,
-          });
         });
       } while (data.articles.length > 0 && pageNumber * pageSize <= pageLimit)
     })().then(() => subscriber.complete())
-    .catch(e => subscriber.error(e));
+      .catch(e => subscriber.error(e));
   });
 }
 
@@ -120,4 +137,10 @@ export async function getSources(country?: string): Promise<Array<NewsApiSource>
   });
 }
 
-export default { craftNewsServiceFromNewsApiSource, getNewsFromSource, getNewsApiObservableForDomains, getSources };
+export default {
+  craftNewsServiceFromNewsApiSource,
+  getNewsFromSource,
+  getNewsApiObservableForDomains,
+  getSources,
+  getNews,
+};

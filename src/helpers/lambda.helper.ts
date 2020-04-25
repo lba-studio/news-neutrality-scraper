@@ -1,5 +1,6 @@
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyHandler, APIGatewayProxyResult, APIGatewayProxyEvent } from "aws-lambda";
 import { logger } from "../utils/logger.util";
+import { BadRequestError } from "../errors";
 
 function checkIfResultIsEmpty(result: void | APIGatewayProxyResult): APIGatewayProxyResult {
   if (!result) {
@@ -15,17 +16,28 @@ export function handleError(func: APIGatewayProxyHandler): APIGatewayProxyHandle
       return result;
     } catch (e) {
       let errorObject = (e instanceof Error) ? {
-          error: e.message,
-          errorType: e.name,
-          stack: e.stack,
-        } : e;
+        error: e.message,
+        errorType: e.name,
+        stack: e.stack,
+      } : e;
       logger.error(e);
+      let statusCode = 500;
+      if (e instanceof BadRequestError) {
+        statusCode = 400;
+      }
       return {
-        statusCode: 500,
+        statusCode: statusCode,
         body: JSON.stringify(errorObject),
       };
     }
   };
+}
+
+export function getBody(event: APIGatewayProxyEvent): any {
+  if (!event.body) {
+    throw new BadRequestError('Unable to get required payload body.');
+  }
+  return JSON.parse(event.body);
 }
 
 export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
@@ -40,9 +52,9 @@ export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler
   }
 }
 
-export function defaultApiResponseHandler(func: Function, statusCode?: number): APIGatewayProxyHandler {
-  return handleError(injectCors(async () => {
-    const result = await func();
+export function defaultApiResponseHandler(func: APIGatewayProxyHandler | Function, statusCode?: number): APIGatewayProxyHandler {
+  return handleError(injectCors(async (...args) => {
+    const result = await func(...args);
     if (!result) {
       return {
         body: '',

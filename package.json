@@ -39,12 +39,12 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsc && npm run copy-dependencies",
-    "build-watch": "npm run build && cpx ./.env ./dist && tsc -w --preserveWatchOutput true",
+    "build-watch": "npm run build && cpx ./.env ./dist && npm run init && tsc -w --preserveWatchOutput true",
     "copy-dependencies": "cpx ./package.json ./dist && cpx ./package-lock.json ./dist && cd ./dist && npm i --production",
     "start": "concurrently --kill-others --kill-others-on-fail \"npm run build-watch\" \"docker pull lambci/lambda:nodejs12.x && sam local start-api -p 3001 --skip-pull-image --template ./template.yaml\"",
     "scrape": "npm run prestart && ts-node -r dotenv/config ./src/calculate-neutrality.ts",
     "test": "mocha --require ts-node/register ./src/**/*.spec.ts",
-    "prestart": "sam local invoke InitFunction --no-event",
+    "init": "sam local invoke InitFunction --no-event",
     "lint": "eslint src/**/*.ts"
   },
   "author": "",

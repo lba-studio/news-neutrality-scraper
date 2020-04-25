@@ -21,7 +21,6 @@ Globals:
         Timeout: 10
         Environment:
             Variables:
-                LOCAL_DYNAMODB_ENDPOINT: "http://192.168.99.100:8000"
                 NODESCRAPE_LOG_LEVEL: !Ref LogLevel
                 NEWS_API_APIKEY: !Ref NewsApiApikey
                 NEWS_API_URL: !Ref NewsApiUrl
@@ -82,7 +81,40 @@ Resources:
             Policies:
                 - DynamoDBCrudPolicy:
                     TableName: !Ref NewsSourceTable 
-                - ComprehendBasicAccessPolicy: {}                   
+                - ComprehendBasicAccessPolicy: {}
+
+    SearchTopicScoreFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/
+            Handler: lambda-handlers/search-topic.handler
+            Runtime: nodejs12.x
+            Events:
+                CalculateNeutralityApi:
+                    Type: Api
+                    Properties:
+                        Path: /topic-search
+                        Method: post
+            Policies:
+                - ComprehendBasicAccessPolicy: {}
+                - DynamoDBCrudPolicy:
+                    TableName: !Ref TopicScoreTable
+    
+    GetTopicScoreFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/
+            Handler: lambda-handlers/get-topic.getAllTopicScoresHandler
+            Runtime: nodejs12.x
+            Events:
+                CalculateNeutralityApi:
+                    Type: Api
+                    Properties:
+                        Path: /topics
+                        Method: get
+            Policies:
+                - DynamoDBCrudPolicy:
+                    TableName: !Ref TopicScoreTable
 
     NewsSourceTable:
         Type: AWS::DynamoDB::Table
@@ -91,6 +123,18 @@ Resources:
               Name: AWS::Include
               Parameters:
                 Location: ./src/config/dynamo-schemas/news-sources.schema.json
+
+    TopicScoreTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            Fn::Transform:
+              Name: AWS::Include
+              Parameters:
+                Location: ./src/config/dynamo-schemas/topic-score.schema.json
+            TimeToLiveSpecification:
+              Enabled: true
+              AttributeName: "ttl"
+            
 
     InitFunction:
         Type: AWS::Serverless::Function
