@@ -48,7 +48,7 @@ npm start
 `GET /calculate` - (this should be a PUT, but made it a GET for easy debugging for now) triggers the news sentiment calculation and stores the result in DynamoDB, which is exposed through `GET /news-scores` .
 
 # Deploying the application
-That's a secret. For now. (jk it's manually deployed through `./.ci/deploy.sh` but the script is not automated yet, nor is it final).
+See [https://github.com/verzac/news-neutrality-scraper/blob/master/.travis.yml](.travis.yml). All commits to master are pushed to production immediately by Travis CI. Please make sure you've linted/tested/built the project before deploying.
 
 # Contributing
 Contributions are currently locked for now while I get the project up and running. However, feel free to shoot me a message or open an issue should you want to contribute! Feedbacks are always appreciated :)
