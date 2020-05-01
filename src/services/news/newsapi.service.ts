@@ -40,6 +40,7 @@ interface NewsApiQueryParam {
   page?: number;
   q?: string; // keywords or phrases to search for in the article title and body.
   language?: string;
+  sortBy?: 'popularity' | 'relevancy' | 'publishedAt',
 }
 
 const url = config.newsApi.url;
@@ -99,7 +100,7 @@ function toOnlineNewsArticle(article: NewsApiArticle): OnlineNewsArticle {
 }
 
 export async function getNews(params: NewsApiQueryParam): Promise<Array<NewsApiArticle>> {
-  const result = await getTopHeadlines(params)
+  const result = await getEveryNews(params);
   return result.articles
     .filter(article => article.content && article.description && article.title);
 }
