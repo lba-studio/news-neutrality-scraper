@@ -1,4 +1,4 @@
-import { News, OnlineNewsArticle } from "./news";
+import { OnlineNewsArticle } from "./news";
 import sentimentAnalyzerService from "./sentiment-analyzer.service";
 import newsApiService from "./news/newsapi.service";
 import topicScoreRepository from "../repositories/topic-score.repository";
