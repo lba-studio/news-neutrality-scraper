@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import topicService, { GetTopicResult } from './topic.service';
-import newsapiService from './news/newsapi.service';
+import newsapiService, { NewsApiArticle } from './news/newsapi.service';
 import sentimentAnalyzerService from './sentiment-analyzer.service';
 import topicScoreRepository from '../repositories/topic-score.repository';
 import { expect } from 'chai';
@@ -12,11 +12,11 @@ describe("topic.service", () => {
 
   it('should calculate the average score of each news articles for a particular topic', async () => {
     const topic = 'huehue';
-    const news = [
-      { content: 'huehue', title: 'title1' },
-      { content: 'wassup', title: 'title2' },
+    const news: Array<NewsApiArticle> = [
+      { content: 'huehue', title: 'title1', source: { name: 'huehue' }, url: 'test', urlToImage: 'test' },
+      { content: 'wassup', title: 'title2', source: { name: 'wassup' }, url: 'test2', urlToImage: 'test2' },
     ];
-    const expectedResult: GetTopicResult = { score: 0.5, newsArticlesAnalyzed: 2, sampleAnalyzedArticles: news };
+    const expectedResult: GetTopicResult = { score: 0.5, newsArticlesAnalyzed: 2, sampleAnalyzedArticles: news.map(newsapiService.toOnlineNewsArticle) };
     sinon.stub(newsapiService, 'getNews')
       .returns(Promise.resolve(news));
     sinon.stub(sentimentAnalyzerService, 'analyzeText')
