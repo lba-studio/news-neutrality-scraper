@@ -1,7 +1,7 @@
 import axios from '../../clients/axios.client';
 import { config } from '../../config';
 import { NewsApiError } from '../../errors';
-import { News, NewsService } from '.';
+import { News, NewsService, OnlineNewsArticle } from '.';
 import { Observable } from 'rxjs';
 import { logger } from '../../utils/logger.util';
 
@@ -21,6 +21,7 @@ export interface NewsApiArticle {
   description?: string;
   url: string;
   content?: string;
+  urlToImage: string;
 }
 
 export interface NewsApiSource {
@@ -73,11 +74,19 @@ function toNews(article: NewsApiArticle): News {
   };
 }
 
-export async function getNews(params: NewsApiQueryParam): Promise<Array<News>> {
+function toOnlineNewsArticle(article: NewsApiArticle): OnlineNewsArticle {
+  return {
+    ...toNews(article),
+    sourceName: article.source.name,
+    imageUrl: article.urlToImage,
+    url: article.url,
+  };
+}
+
+export async function getNews(params: NewsApiQueryParam): Promise<Array<NewsApiArticle>> {
   const result = await getNewsFromSource(params)
   return result.articles
-    .filter(article => article.content && article.description && article.title)
-    .map(toNews);
+    .filter(article => article.content && article.description && article.title);
 }
 
 export function getNewsApiObservableForDomains(sources: Array<string>): Observable<News> {
@@ -144,4 +153,5 @@ export default {
   getNewsApiObservableForDomains,
   getSources,
   getNews,
+  toOnlineNewsArticle,
 };

@@ -1,4 +1,4 @@
-import { News } from "./news";
+import { News, OnlineNewsArticle } from "./news";
 import sentimentAnalyzerService from "./sentiment-analyzer.service";
 import newsApiService from "./news/newsapi.service";
 import topicScoreRepository from "../repositories/topic-score.repository";
@@ -6,16 +6,17 @@ import topicScoreRepository from "../repositories/topic-score.repository";
 export type GetTopicResult = {
   score: number | null;
   newsArticlesAnalyzed: number;
-  sampleAnalyzedArticles: Array<News>;
+  sampleAnalyzedArticles: Array<OnlineNewsArticle>;
 };
 
 async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<GetTopicResult> {
-  const newsArr = await newsApiService.getNews({
+  const newsApiResult = await newsApiService.getNews({
     q: topic,
     page: 1,
     pageSize: 50,
     language: 'en',
   });
+  const newsArr = newsApiResult.map(newsApiService.toOnlineNewsArticle);
   const newsScores = await Promise.all(newsArr.map(news => sentimentAnalyzerService.analyzeText(news.content)));
   const firstScore = newsScores.pop();
   const sampleAnalyzedArticles = newsArr;
