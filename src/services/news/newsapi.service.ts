@@ -40,7 +40,7 @@ interface NewsApiQueryParam {
   page?: number;
   q?: string; // keywords or phrases to search for in the article title and body.
   language?: string;
-  sortBy?: 'popularity' | 'relevancy' | 'publishedAt',
+  sortBy?: 'popularity' | 'relevancy' | 'publishedAt';
 }
 
 const url = config.newsApi.url;
