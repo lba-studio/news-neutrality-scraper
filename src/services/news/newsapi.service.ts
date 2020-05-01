@@ -46,8 +46,23 @@ const url = config.newsApi.url;
 const apiKey = config.newsApi.apiKey;
 const pageLimit = config.newsApi.pageLimit;
 
-export async function getNewsFromSource(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
+export async function getEveryNews(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
   return await axios.get(url + '/everything', {
+    params: params,
+    headers: {
+      'Authorization': apiKey,
+    },
+  }).then(resp => resp.data)
+    .catch(e => {
+      if (e.response) {
+        logger.error(e.response.data);
+      }
+      throw e;
+    });
+}
+
+export async function getTopHeadlines(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
+  return await axios.get(url + '/top-headlines', {
     params: params,
     headers: {
       'Authorization': apiKey,
@@ -84,7 +99,7 @@ function toOnlineNewsArticle(article: NewsApiArticle): OnlineNewsArticle {
 }
 
 export async function getNews(params: NewsApiQueryParam): Promise<Array<NewsApiArticle>> {
-  const result = await getNewsFromSource(params)
+  const result = await getTopHeadlines(params)
   return result.articles
     .filter(article => article.content && article.description && article.title);
 }
@@ -96,7 +111,7 @@ export function getNewsApiObservableForDomains(sources: Array<string>): Observab
       let pageNumber = 1;
       const pageSize = 50; // max is 100, but after 50 it's not too relevant
       do {
-        data = await getNewsFromSource({
+        data = await getEveryNews({
           sources: sources.join(','),
           page: pageNumber++,
           pageSize: pageSize,
@@ -149,7 +164,7 @@ export async function getSources(country?: string): Promise<Array<NewsApiSource>
 
 export default {
   craftNewsServiceFromNewsApiSource,
-  getNewsFromSource,
+  getEveryNews,
   getNewsApiObservableForDomains,
   getSources,
   getNews,
