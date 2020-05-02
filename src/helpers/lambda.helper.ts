@@ -2,6 +2,11 @@ import { APIGatewayProxyHandler, APIGatewayProxyResult, APIGatewayProxyEvent } f
 import { logger } from "../utils/logger.util";
 import { BadRequestError } from "../errors";
 
+const allowedOrigins = [
+  /^(https?:\/\/)?localhost\/?(:[0-9]+)?$/,
+  /^(https?:\/\/)?.*\.benjamintanone\.com\/?$/
+];
+
 function checkIfResultIsEmpty(result: void | APIGatewayProxyResult): APIGatewayProxyResult {
   if (!result) {
     throw new Error('Fatal implementation error: Empty result.');
@@ -41,14 +46,16 @@ export function getBody(event: APIGatewayProxyEvent): any {
 }
 
 export function injectCors(func: APIGatewayProxyHandler): APIGatewayProxyHandler {
-  return async (...args): Promise<APIGatewayProxyResult> => {
-    const result = checkIfResultIsEmpty(await func(...args));
-    return {
-      ...result,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
+  return async (event, ...args): Promise<APIGatewayProxyResult> => {
+    const result = checkIfResultIsEmpty(await func(event, ...args));
+    const origin = event.headers.origin || event.headers.Origin;
+    if (origin && allowedOrigins.some(allowedOrigin => allowedOrigin.test(origin))) {
+      result.headers = {
+        ...result.headers,
+        'Access-Control-Allow-Origin': origin,
+      };
     }
+    return result;
   }
 }
 
