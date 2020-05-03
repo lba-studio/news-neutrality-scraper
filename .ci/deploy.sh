@@ -15,7 +15,8 @@ AWSCLI_ARGS="" # used to be --profile $1
 # PARAMETER_OVERRIDES_ARG="--parameter-overrides `sed -e '/#.*/d;s/: */=/;s/\r//g;s/$//g' $PARAMETER_CONFIG_PATH`"
 PARAMETER_OVERRIDES_ARG="--parameter-overrides \
 NewsApiApikey=$NODESCRAPE_NEWSAPI_APIKEY \
-LogLevel=INFO"
+LogLevel=INFO \
+AllowOrigin=\"'https://newswatch.benjamintanone.com'\""
 
 echo "---Deployment Config---"
 echo "TEMPLATE_FILENAME=$TEMPLATE_FILENAME"
