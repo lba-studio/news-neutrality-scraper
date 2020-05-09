@@ -15,6 +15,7 @@ async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<Ge
     page: 1,
     pageSize: 50,
     language: 'en',
+    sortBy: 'publishedAt',
   });
   const newsArr = newsApiResult.map(newsApiService.toOnlineNewsArticle);
   const newsScores = await Promise.all(newsArr.map(news => sentimentAnalyzerService.analyzeText(news.content)));
