@@ -13,25 +13,34 @@ const topicScoreRepository = {
     const itemToPut = {
       ...topicScore,
       ttl: Math.floor(Date.now() / 1000) + ttlSeconds,
-    }
-    return await dynamoDbDocClient.put({
-      TableName: TABLE_NAME, 
-      Item: itemToPut,
-    }).promise();
+    };
+    return await dynamoDbDocClient
+      .put({
+        TableName: TABLE_NAME,
+        Item: itemToPut,
+      })
+      .promise();
   },
   scan: async (): Promise<Array<TopicScore>> => {
-    return dynamoDbDocClient.scan({ TableName: TABLE_NAME }).promise()
-      .then(item => item.Items as Array<TopicScore>);
+    return dynamoDbDocClient
+      .scan({ TableName: TABLE_NAME })
+      .promise()
+      .then((item) => item.Items as Array<TopicScore>);
   },
-  get: async (topic: string, consistentRead = false): Promise<TopicScore | undefined> => {
-    return dynamoDbDocClient.get({
-      TableName: TABLE_NAME,
-      Key: {
-        topic: topic,
-      },
-      ConsistentRead: consistentRead
-    }).promise()
-      .then(item => item.Item as TopicScore);
+  get: async (
+    topic: string,
+    consistentRead = false
+  ): Promise<TopicScore | undefined> => {
+    return dynamoDbDocClient
+      .get({
+        TableName: TABLE_NAME,
+        Key: {
+          topic: topic,
+        },
+        ConsistentRead: consistentRead,
+      })
+      .promise()
+      .then((item) => item.Item as TopicScore);
   },
 };
 

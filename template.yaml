@@ -1,155 +1,152 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    SAMified Nodescrape.
+  SAMified Nodescrape.
 
 Parameters:
-    NewsApiApikey:
-        Type: String
-        NoEcho: true
-    NewsApiUrl:
-        Type: String
-        Default: "https://newsapi.org/v2"
-        Description: The URL to NewsAPI.org.
-    LogLevel:
-        Type: String
-        Default: DEBUG
-    AllowOrigin:
-        Type: String
-        Default: "'*'"
+  NewsApiApikey:
+    Type: String
+    NoEcho: true
+  NewsApiUrl:
+    Type: String
+    Default: "https://newsapi.org/v2"
+    Description: The URL to NewsAPI.org.
+  LogLevel:
+    Type: String
+    Default: DEBUG
+  AllowOrigin:
+    Type: String
+    Default: "'*'"
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
-    Function:
-        Timeout: 10
-        Environment:
-            Variables:
-                NODESCRAPE_LOG_LEVEL: !Ref LogLevel
-                NEWS_API_APIKEY: !Ref NewsApiApikey
-                NEWS_API_URL: !Ref NewsApiUrl
-    Api:
-        Cors:
-            AllowMethods: "'*'"
-            AllowOrigin: !Ref AllowOrigin
-            AllowHeaders: "'*'"
+  Function:
+    Timeout: 10
+    Environment:
+      Variables:
+        NODESCRAPE_LOG_LEVEL: !Ref LogLevel
+        NEWS_API_APIKEY: !Ref NewsApiApikey
+        NEWS_API_URL: !Ref NewsApiUrl
+  Api:
+    Cors:
+      AllowMethods: "'*'"
+      AllowOrigin: !Ref AllowOrigin
+      AllowHeaders: "'*'"
 
-Resources:    
-    GetNewsSourcesFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: lambda-handlers/get-news.getNews
-            Runtime: nodejs12.x
-            Events:
-                GetNewsSourcesApi:
-                    Type: Api
-                    Properties:
-                        Path: /news-scores
-                        Method: get
-            Policies:
-                - DynamoDBCrudPolicy:
-                    TableName: !Ref NewsSourceTable
+Resources:
+  GetNewsSourcesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: lambda-handlers/get-news.getNews
+      Runtime: nodejs12.x
+      Events:
+        GetNewsSourcesApi:
+          Type: Api
+          Properties:
+            Path: /news-scores
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NewsSourceTable
 
-    PingFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: lambda-handlers/hello-world.helloWorld
-            Runtime: nodejs12.x
-            Timeout: 30
-            Events:
-                GetNewsSourcesApi:
-                    Type: Api
-                    Properties:
-                        Path: /.ping
-                        Method: get
+  PingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: lambda-handlers/hello-world.helloWorld
+      Runtime: nodejs12.x
+      Timeout: 30
+      Events:
+        GetNewsSourcesApi:
+          Type: Api
+          Properties:
+            Path: /.ping
+            Method: get
 
-    CalculateNeutralityFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: calculate-neutrality.handler
-            Runtime: nodejs12.x
-            Timeout: 120
-            Events:
-                CalculateNeutralityApi:
-                    Type: Api
-                    Properties:
-                        Path: /calculate
-                        Method: get
-                CNScheduledEvent:
-                    Type: Schedule
-                    Properties:
-                        Schedule: rate(1 day)
-            Policies:
-                - DynamoDBCrudPolicy:
-                    TableName: !Ref NewsSourceTable 
-                - ComprehendBasicAccessPolicy: {}
+  CalculateNeutralityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: calculate-neutrality.handler
+      Runtime: nodejs12.x
+      Timeout: 120
+      Events:
+        CalculateNeutralityApi:
+          Type: Api
+          Properties:
+            Path: /calculate
+            Method: get
+        CNScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NewsSourceTable
+        - ComprehendBasicAccessPolicy: {}
 
-    SearchTopicScoreFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: lambda-handlers/search-topic.handler
-            Runtime: nodejs12.x
-            Events:
-                CalculateNeutralityApi:
-                    Type: Api
-                    Properties:
-                        Path: /topic-search
-                        Method: post
-            Policies:
-                - ComprehendBasicAccessPolicy: {}
-                - DynamoDBCrudPolicy:
-                    TableName: !Ref TopicScoreTable
-    
-    GetTopicScoreFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: lambda-handlers/get-topic.getAllTopicScoresHandler
-            Runtime: nodejs12.x
-            Events:
-                CalculateNeutralityApi:
-                    Type: Api
-                    Properties:
-                        Path: /topics
-                        Method: get
-            Policies:
-                - DynamoDBCrudPolicy:
-                    TableName: !Ref TopicScoreTable
+  SearchTopicScoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: lambda-handlers/search-topic.handler
+      Runtime: nodejs12.x
+      Events:
+        CalculateNeutralityApi:
+          Type: Api
+          Properties:
+            Path: /topic-search
+            Method: post
+      Policies:
+        - ComprehendBasicAccessPolicy: {}
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TopicScoreTable
 
-    NewsSourceTable:
-        Type: AWS::DynamoDB::Table
-        Properties:
-            Fn::Transform:
-              Name: AWS::Include
-              Parameters:
-                Location: ./src/config/dynamo-schemas/news-sources.schema.json
+  GetTopicScoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: lambda-handlers/get-topic.getAllTopicScoresHandler
+      Runtime: nodejs12.x
+      Events:
+        CalculateNeutralityApi:
+          Type: Api
+          Properties:
+            Path: /topics
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TopicScoreTable
 
-    TopicScoreTable:
-        Type: AWS::DynamoDB::Table
-        Properties:
-            Fn::Transform:
-              Name: AWS::Include
-              Parameters:
-                Location: ./src/config/dynamo-schemas/topic-score.schema.json
-            TimeToLiveSpecification:
-              Enabled: true
-              AttributeName: "ttl"
-            
+  NewsSourceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Fn::Transform:
+        Name: AWS::Include
+        Parameters:
+          Location: ./src/config/dynamo-schemas/news-sources.schema.json
 
-    InitFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: dist/
-            Handler: init.handler
-            Runtime: nodejs12.x
-            Timeout: 30
+  TopicScoreTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Fn::Transform:
+        Name: AWS::Include
+        Parameters:
+          Location: ./src/config/dynamo-schemas/topic-score.schema.json
+      TimeToLiveSpecification:
+        Enabled: true
+        AttributeName: "ttl"
+
+  InitFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: init.handler
+      Runtime: nodejs12.x
+      Timeout: 30
 
 Outputs:
-
-    BaseUrl:
-      Description: "The base URL of the service."
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
-
+  BaseUrl:
+    Description: "The base URL of the service."
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

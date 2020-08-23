@@ -1,9 +1,9 @@
-import axios from '../../clients/axios.client';
-import { config } from '../../config';
-import { NewsApiError } from '../../errors';
-import { News, NewsService, OnlineNewsArticle } from '.';
-import { Observable } from 'rxjs';
-import { logger } from '../../utils/logger.util';
+import axios from "../../clients/axios.client";
+import { config } from "../../config";
+import { NewsApiError } from "../../errors";
+import { News, NewsService, OnlineNewsArticle } from ".";
+import { Observable } from "rxjs";
+import { logger } from "../../utils/logger.util";
 
 export interface NewsApiResponse {
   status: string;
@@ -40,21 +40,25 @@ interface NewsApiQueryParam {
   page?: number;
   q?: string; // keywords or phrases to search for in the article title and body.
   language?: string;
-  sortBy?: 'popularity' | 'relevancy' | 'publishedAt';
+  sortBy?: "popularity" | "relevancy" | "publishedAt";
 }
 
 const url = config.newsApi.url;
 const apiKey = config.newsApi.apiKey;
 const pageLimit = config.newsApi.pageLimit;
 
-export async function getEveryNews(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
-  return await axios.get(url + '/everything', {
-    params: params,
-    headers: {
-      'Authorization': apiKey,
-    },
-  }).then(resp => resp.data)
-    .catch(e => {
+export async function getEveryNews(
+  params?: NewsApiQueryParam
+): Promise<NewsApiResponse> {
+  return await axios
+    .get(url + "/everything", {
+      params: params,
+      headers: {
+        Authorization: apiKey,
+      },
+    })
+    .then((resp) => resp.data)
+    .catch((e) => {
       if (e.response) {
         logger.error(e.response.data);
       }
@@ -62,14 +66,18 @@ export async function getEveryNews(params?: NewsApiQueryParam): Promise<NewsApiR
     });
 }
 
-export async function getTopHeadlines(params?: NewsApiQueryParam): Promise<NewsApiResponse> {
-  return await axios.get(url + '/top-headlines', {
-    params: params,
-    headers: {
-      'Authorization': apiKey,
-    },
-  }).then(resp => resp.data)
-    .catch(e => {
+export async function getTopHeadlines(
+  params?: NewsApiQueryParam
+): Promise<NewsApiResponse> {
+  return await axios
+    .get(url + "/top-headlines", {
+      params: params,
+      headers: {
+        Authorization: apiKey,
+      },
+    })
+    .then((resp) => resp.data)
+    .catch((e) => {
       if (e.response) {
         logger.error(e.response.data);
       }
@@ -99,68 +107,83 @@ function toOnlineNewsArticle(article: NewsApiArticle): OnlineNewsArticle {
   };
 }
 
-export async function getNews(params: NewsApiQueryParam): Promise<Array<NewsApiArticle>> {
+export async function getNews(
+  params: NewsApiQueryParam
+): Promise<Array<NewsApiArticle>> {
   const result = await getEveryNews(params);
-  return result.articles
-    .filter(article => article.content && article.description && article.title);
+  return result.articles.filter(
+    (article) => article.content && article.description && article.title
+  );
 }
 
-export function getNewsApiObservableForDomains(sources: Array<string>): Observable<News> {
-  return new Observable(subscriber => {
+export function getNewsApiObservableForDomains(
+  sources: Array<string>
+): Observable<News> {
+  return new Observable((subscriber) => {
     (async () => {
       let data: NewsApiResponse;
       let pageNumber = 1;
       const pageSize = 50; // max is 100, but after 50 it's not too relevant
       do {
         data = await getEveryNews({
-          sources: sources.join(','),
+          sources: sources.join(","),
           page: pageNumber++,
           pageSize: pageSize,
         });
-        data.articles.forEach(article => {
+        data.articles.forEach((article) => {
           try {
             const news = toNews(article);
             subscriber.next(news);
           } catch (e) {
-            throw new Error(`Sources: ${sources} | ${e.message || JSON.stringify(e)}`)
+            throw new Error(
+              `Sources: ${sources} | ${e.message || JSON.stringify(e)}`
+            );
           }
         });
-      } while (data.articles.length > 0 && pageNumber * pageSize <= pageLimit)
-    })().then(() => subscriber.complete())
-      .catch(e => subscriber.error(e));
+      } while (data.articles.length > 0 && pageNumber * pageSize <= pageLimit);
+    })()
+      .then(() => subscriber.complete())
+      .catch((e) => subscriber.error(e));
   });
 }
 
-export function craftNewsServiceFromNewsApiSource(source: NewsApiSource): NewsService {
+export function craftNewsServiceFromNewsApiSource(
+  source: NewsApiSource
+): NewsService {
   return {
     getNewsObservable: () => getNewsApiObservableForDomains([source.id]),
     sourceUrl: source.url,
     sourceId: source.id,
-    sourceProvider: 'https://newsapi.org',
+    sourceProvider: "https://newsapi.org",
     sourceName: source.name,
     sourceCountry: source.country,
   };
 }
 
-export async function getSources(country?: string): Promise<Array<NewsApiSource>> {
-  return await axios.get(url + '/sources', {
-    params: {
-      country: country
-    },
-    headers: {
-      'Authorization': apiKey,
-    },
-  }).then(resp => {
-    if (!resp.data.sources) {
-      throw new NewsApiError('Unable to retrieve sources.');
-    }
-    return resp.data.sources;
-  }).catch(e => {
-    if (e.response) {
-      logger.error(e.response.data);
-    }
-    throw e;
-  });
+export async function getSources(
+  country?: string
+): Promise<Array<NewsApiSource>> {
+  return await axios
+    .get(url + "/sources", {
+      params: {
+        country: country,
+      },
+      headers: {
+        Authorization: apiKey,
+      },
+    })
+    .then((resp) => {
+      if (!resp.data.sources) {
+        throw new NewsApiError("Unable to retrieve sources.");
+      }
+      return resp.data.sources;
+    })
+    .catch((e) => {
+      if (e.response) {
+        logger.error(e.response.data);
+      }
+      throw e;
+    });
 }
 
 export default {

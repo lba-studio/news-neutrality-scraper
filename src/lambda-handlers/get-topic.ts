@@ -4,12 +4,13 @@ import { BadRequestError } from "../errors";
 import topicScoreRepository from "../repositories/topic-score.repository";
 
 export const getAllTopicScoresHandler = defaultApiResponseHandler(async () =>
-  topicScoreRepository.scan());
+  topicScoreRepository.scan()
+);
 
 async function getTopicScore(event: APIGatewayProxyEvent) {
   const topic = event.pathParameters?.topic;
   if (!topic) {
-    throw new BadRequestError('Path parameter topic must be provided.');
+    throw new BadRequestError("Path parameter topic must be provided.");
   }
   return await topicScoreRepository.get(topic);
 }

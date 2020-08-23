@@ -9,16 +9,21 @@ export type GetTopicResult = {
   sampleAnalyzedArticles: Array<OnlineNewsArticle>;
 };
 
-async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<GetTopicResult> {
+async function getTopicScore(
+  topic: string,
+  shouldStoreTopic = true
+): Promise<GetTopicResult> {
   const newsApiResult = await newsApiService.getNews({
     q: topic,
     page: 1,
     pageSize: 50,
-    language: 'en',
-    sortBy: 'publishedAt',
+    language: "en",
+    sortBy: "publishedAt",
   });
   const newsArr = newsApiResult.map(newsApiService.toOnlineNewsArticle);
-  const newsScores = await Promise.all(newsArr.map(news => sentimentAnalyzerService.analyzeText(news.content)));
+  const newsScores = await Promise.all(
+    newsArr.map((news) => sentimentAnalyzerService.analyzeText(news.content))
+  );
   const firstScore = newsScores.pop();
   const sampleAnalyzedArticles = newsArr;
   if (firstScore === undefined) {
@@ -29,7 +34,9 @@ async function getTopicScore(topic: string, shouldStoreTopic = true): Promise<Ge
     };
   }
   const numberOfNewsArticlesAnalyzed = newsScores.length + 1;
-  const avgScore = newsScores.reduce((accumulator, score) => accumulator + score, firstScore) / numberOfNewsArticlesAnalyzed;
+  const avgScore =
+    newsScores.reduce((accumulator, score) => accumulator + score, firstScore) /
+    numberOfNewsArticlesAnalyzed;
   if (shouldStoreTopic) {
     await topicScoreRepository.put({
       score: avgScore,

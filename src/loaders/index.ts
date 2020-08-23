@@ -1,9 +1,11 @@
-import { Subscriber, Observable } from 'rxjs';
-import { NewsService } from '../services/news';
-import newsApiServiceLoader from './newsapi.loader';
-import rssNewsServiceLoader from './rss.loader';
+import { Subscriber, Observable } from "rxjs";
+import { NewsService } from "../services/news";
+import newsApiServiceLoader from "./newsapi.loader";
+import rssNewsServiceLoader from "./rss.loader";
 
-export type NewsServiceLoader = (subscriber: Subscriber<NewsService>) => Promise<void> | void;
+export type NewsServiceLoader = (
+  subscriber: Subscriber<NewsService>
+) => Promise<void> | void;
 
 const loaders: Array<NewsServiceLoader> = [
   // add any loaders here
@@ -17,10 +19,10 @@ const loaders: Array<NewsServiceLoader> = [
  * into retrieveScoreFromNewsService(). see handler().
  */
 function loadNewsServicesToAnalyze(): Observable<NewsService> {
-  return new Observable(subscriber => {
-    Promise.all(loaders.map(loader => loader(subscriber)))
+  return new Observable((subscriber) => {
+    Promise.all(loaders.map((loader) => loader(subscriber)))
       .then(() => subscriber.complete())
-      .catch(e => subscriber.error(e));
+      .catch((e) => subscriber.error(e));
   });
 }
 

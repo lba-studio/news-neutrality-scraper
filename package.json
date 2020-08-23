@@ -45,7 +45,8 @@
     "scrape": "npm run prestart && ts-node -r dotenv/config ./src/calculate-neutrality.ts",
     "test": "mocha --require ts-node/register ./src/**/*.spec.ts",
     "init": "sam local invoke InitFunction --no-event",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint --ext .ts src/ && prettier --check src/",
+    "lint:fix": "eslint --ext .ts src/ && prettier --write src/"
   },
   "author": "",
   "license": "ISC",

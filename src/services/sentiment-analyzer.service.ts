@@ -1,8 +1,8 @@
-import comprehend from '../clients/comprehend.client';
-import _ from 'lodash';
-import { logger } from '../utils/logger.util';
-import { BatchDetectSentimentItemResult } from 'aws-sdk/clients/comprehend';
-import weakTrim from '../utils/weakTrim';
+import comprehend from "../clients/comprehend.client";
+import _ from "lodash";
+import { logger } from "../utils/logger.util";
+import { BatchDetectSentimentItemResult } from "aws-sdk/clients/comprehend";
+import weakTrim from "../utils/weakTrim";
 
 interface SentimentRequest {
   text: string;
@@ -18,8 +18,8 @@ const COMPREHEND_QUOTA_PER_SECOND = 10;
 const MAX_CHAR_LIMIT = 2000;
 
 function computeScore(result: BatchDetectSentimentItemResult): number {
-  const positive = _.get(result, 'SentimentScore.Positive');
-  const negative = _.get(result, 'SentimentScore.Negative');
+  const positive = _.get(result, "SentimentScore.Positive");
+  const negative = _.get(result, "SentimentScore.Negative");
   const score = positive - negative;
   return score;
 }
@@ -37,43 +37,52 @@ async function dispatch() {
   batchBuffer = batchBuffer.slice(MAX_BATCH_BUFFER_SIZE);
   function getRequestFromRequestList(index?: number): SentimentRequest {
     if (index === undefined) {
-      throw new Error('wtf comprehend is this janky indexing');
+      throw new Error("wtf comprehend is this janky indexing");
     }
     let docRequest = requestList[index];
     if (!docRequest) {
-      throw new Error('missing docRequest!');
+      throw new Error("missing docRequest!");
     }
     return docRequest;
   }
   if (batchBuffer.length) {
     clearTimeoutToken();
-    timeoutToken = setTimeout(() => dispatch(), 1000 / COMPREHEND_QUOTA_PER_SECOND);
+    timeoutToken = setTimeout(
+      () => dispatch(),
+      1000 / COMPREHEND_QUOTA_PER_SECOND
+    );
   }
   if (!requestList.length) {
-    logger.debug('Empty requestList. Skipping!');
+    logger.debug("Empty requestList. Skipping!");
     return;
   }
   try {
-    const result = await comprehend.batchDetectSentiment({
-      LanguageCode: 'en',
-      TextList: requestList.map(e => e.text),
-    }).promise();
+    const result = await comprehend
+      .batchDetectSentiment({
+        LanguageCode: "en",
+        TextList: requestList.map((e) => e.text),
+      })
+      .promise();
     result.ResultList.forEach((e) => {
       let docRequest = getRequestFromRequestList(e.Index);
       let score = computeScore(e);
       if (!score) {
-        throw new Error(`Unable to retrieve score from AWS Comprehend: ${JSON.stringify(result)}`);
+        throw new Error(
+          `Unable to retrieve score from AWS Comprehend: ${JSON.stringify(
+            result
+          )}`
+        );
       }
       docRequest.onDone(score);
     });
-    result.ErrorList.forEach(e => {
+    result.ErrorList.forEach((e) => {
       let docRequest = getRequestFromRequestList(e.Index);
       docRequest.onError(e);
     });
   } catch (e) {
     // it's a bad batch homie! let's get rid of em all
     logger.error(e);
-    requestList.forEach(request => request.onError(e));
+    requestList.forEach((request) => request.onError(e));
   }
 }
 
@@ -93,8 +102,8 @@ async function analyzeText(text: string): Promise<number> {
   return new Promise((res, rej) => {
     sendForProcessing({
       text: textToAnalyze,
-      onDone: e => res(e),
-      onError: err => rej(err),
+      onDone: (e) => res(e),
+      onError: (err) => rej(err),
     });
   });
 }

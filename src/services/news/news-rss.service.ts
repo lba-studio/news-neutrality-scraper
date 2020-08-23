@@ -1,40 +1,41 @@
-import Parser from 'rss-parser';
-import { NewsService, News } from '.';
-import { Observable } from 'rxjs';
-import axios from '../../clients/axios.client';
-import htmlToText from 'html-to-text';
+import Parser from "rss-parser";
+import { NewsService, News } from ".";
+import { Observable } from "rxjs";
+import axios from "../../clients/axios.client";
+import htmlToText from "html-to-text";
 
 const parser = new Parser();
 
 class NewsRssService implements NewsService {
-  readonly sourceProvider = 'RSS Feed Scraper';
-  
+  readonly sourceProvider = "RSS Feed Scraper";
+
   constructor(
     readonly rssFeedUrl: string,
     readonly sourceName: string,
     readonly sourceCountry: string,
     readonly sourceId: string,
     readonly sourceUrl: string,
-    private maxItems: number = 50,
-  ) { }
+    private maxItems: number = 50
+  ) {}
 
   getNewsObservable() {
-    return new Observable<News>(subscriber => {
+    return new Observable<News>((subscriber) => {
       (async () => {
-        let data = await axios.get(this.rssFeedUrl).then(e => e.data);
+        let data = await axios.get(this.rssFeedUrl).then((e) => e.data);
         let feed = await parser.parseString(data);
         if (!feed.items) {
-          throw new Error('RSS - Empty items!');
+          throw new Error("RSS - Empty items!");
         }
         let items = feed.items;
         if (this.maxItems) {
           items = items.slice(0, this.maxItems);
         }
-        items.forEach(item => {
-          let dirtyContent: string | undefined = item['content:encoded'] || item.contentSnippet || item.content;
+        items.forEach((item) => {
+          let dirtyContent: string | undefined =
+            item["content:encoded"] || item.contentSnippet || item.content;
           let title = item.title;
           if (!dirtyContent || !title) {
-            throw new Error('RSS - Empty content and/or title.');
+            throw new Error("RSS - Empty content and/or title.");
           }
           let content: string = htmlToText.fromString(dirtyContent, {
             wordwrap: false,
@@ -49,8 +50,9 @@ class NewsRssService implements NewsService {
             content: content,
           });
         });
-      })().then(() => subscriber.complete())
-        .catch(e => subscriber.error(e));
+      })()
+        .then(() => subscriber.complete())
+        .catch((e) => subscriber.error(e));
     });
   }
 }

@@ -1,10 +1,10 @@
 import { APIGatewayProxyResult } from "aws-lambda";
-import { logger } from '../utils/logger.util';
+import { logger } from "../utils/logger.util";
 
 export async function helloWorld(): Promise<APIGatewayProxyResult> {
-  logger.info('Heya!');
+  logger.info("Heya!");
   return {
-    body: 'Hiya world!',
+    body: "Hiya world!",
     statusCode: 200,
   };
 }

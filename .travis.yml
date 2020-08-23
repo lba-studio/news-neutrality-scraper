@@ -1,5 +1,5 @@
 language: node_js
-node_js: '12'
+node_js: "12"
 cache:
   - pip
   - npm
@@ -12,7 +12,7 @@ jobs:
       env: NODESCRAPE_SKIP_ENV_VALIDATION=true
     - script: npm run build
     - stage: deploy
-      script: 
+      script:
         - npm run clean
         - npm run build
         - bash ./.ci/deploy.sh prod
@@ -26,7 +26,7 @@ jobs:
         - npm ci
       language: python
       python:
-        - '3.7'
+        - "3.7"
       env:
         # AWS
         - secure: "KQyK9ZCvR7bqao82jg75BesyzySyjf3s16RlADiSXctQ7xawSj50YsWVUjPTEA5J2dq/Tv2hlhU0AhJPdQpjqTediKUF1tELfYNvyhbZqHv3YOwxd5IkM6r81IQGuy2UWjSYpH8au8oA64PT95AYagDap5KFsMpU25VOMbaWWh4WhPl7wuoPNunVeb3pLpv2ioGNS2MRscqOm/Cjc9zPcihBEB8LhTcy1ilVUWxxCi0GcrY+JmfbIeSZXzuXZE0uXlCpKK/bqibuwaEp9j1RobIwAW0pCaQxgpfFUoJCOlEjl9LIhHn7CF5ioIidVLoy1q3OdZieYNqPysyFzCiX40unMaE3sB96gtOi4JN2zr8xTcntP4DItLwxTcn8eHppKsot+7UuA8PYD0cmjspsyU+KpnwSkRTC3RmJHToBFcOmNkZ5yxMVqg9cNoCEgYmrZVgTXFkeNR4d3QGEiMPxWOs/wYf6CYihApFGUQOqIhp1ee93YaCPYNBZ7FFZKVSwrsdllJGWspTcX7gX+XneHvL+lnkkh5F73BoSO73+sJv/B6xyjPGuzVKGSlHaBxZplQdmhySZXcgnalYZ+ZY8KGRskCw5cTojl/nbQfSkJsl7yhNNQuY5iLWkQGT0hFM4osoK91icqu+oEyZe6dU/KoiCib3/LGHTGqQBbNa51e8="
