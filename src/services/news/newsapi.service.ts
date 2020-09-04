@@ -39,6 +39,7 @@ interface NewsApiQueryParam {
   pageSize?: number;
   page?: number;
   q?: string; // keywords or phrases to search for in the article title and body.
+  qInTitle?: string;
   language?: string;
   sortBy?: "popularity" | "relevancy" | "publishedAt";
 }

@@ -14,7 +14,7 @@ async function getTopicScore(
   shouldStoreTopic = true
 ): Promise<GetTopicResult> {
   const newsApiResult = await newsApiService.getNews({
-    q: topic,
+    qInTitle: topic,
     page: 1,
     pageSize: 50,
     language: "en",

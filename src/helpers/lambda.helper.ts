@@ -79,8 +79,8 @@ export function defaultApiResponseHandler(
   func: APIGatewayProxyHandler | Function,
   statusCode?: number
 ): APIGatewayProxyHandler {
-  return handleError(
-    injectCors(async (...args) => {
+  return injectCors(
+    handleError(async (...args) => {
       const result = await func(...args);
       if (!result) {
         return {
