@@ -22,7 +22,9 @@ async function getTopicScore(
   });
   const newsArr = newsApiResult.map(newsApiService.toOnlineNewsArticle);
   const newsScores = await Promise.all(
-    newsArr.map((news) => sentimentAnalyzerService.analyzeText(news.content))
+    newsArr.map((news) =>
+      sentimentAnalyzerService.analyzeText(news.title || news.content)
+    )
   );
   const firstScore = newsScores.pop();
   const sampleAnalyzedArticles = newsArr;
