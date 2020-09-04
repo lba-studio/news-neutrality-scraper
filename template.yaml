@@ -119,6 +119,22 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref TopicScoreTable
 
+  GetSuggestedTopicsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: lambda-handlers/suggested-topic.handler
+      Runtime: nodejs12.x
+      Events:
+        CalculateNeutralityApi:
+          Type: Api
+          Properties:
+            Path: /suggested-topics
+            Method: get
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TopicScoreTable
+
   NewsSourceTable:
     Type: AWS::DynamoDB::Table
     Properties:
