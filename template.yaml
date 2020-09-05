@@ -153,6 +153,13 @@ Resources:
       TimeToLiveSpecification:
         Enabled: true
         AttributeName: "ttl"
+  SuggestedTopicTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      Fn::Transform:
+        Name: AWS::Include
+        Parameters:
+          Location: ./src/config/dynamo-schemas/suggested-topic.schema.json
 
   InitFunction:
     Type: AWS::Serverless::Function

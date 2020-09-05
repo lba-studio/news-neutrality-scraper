@@ -1,4 +1,8 @@
-import { NewsSourcesSchema, TopicScoreSchema } from "./dynamo-schemas";
+import {
+  NewsSourcesSchema,
+  TopicScoreSchema,
+  SuggestedTopicSchema,
+} from "./dynamo-schemas";
 import dotenv from "dotenv";
 
 const result = dotenv.config();
@@ -48,6 +52,7 @@ export const config = {
     tableNames: {
       newsSources: NewsSourcesSchema.TableName,
       topicScore: TopicScoreSchema.TableName,
+      suggestedTopic: SuggestedTopicSchema.TableName,
     },
     localEndpoint: process.env.NODESCRAPE_LOCAL_ENDPOINT,
   },
