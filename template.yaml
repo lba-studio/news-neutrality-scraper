@@ -49,21 +49,6 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref NewsSourceTable
-
-  PingFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/
-      Handler: lambda-handlers/hello-world.helloWorld
-      Runtime: nodejs12.x
-      Timeout: 30
-      Events:
-        GetNewsSourcesApi:
-          Type: Api
-          Properties:
-            Path: /.ping
-            Method: get
-
   CalculateNeutralityFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -85,7 +70,6 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref NewsSourceTable
         - ComprehendBasicAccessPolicy: {}
-
   SearchTopicScoreFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -93,7 +77,7 @@ Resources:
       Handler: lambda-handlers/search-topic.handler
       Runtime: nodejs12.x
       Events:
-        CalculateNeutralityApi:
+        SearchTopicScoreApi:
           Type: Api
           Properties:
             Path: /topic-search
@@ -102,7 +86,6 @@ Resources:
         - ComprehendBasicAccessPolicy: {}
         - DynamoDBCrudPolicy:
             TableName: !Ref TopicScoreTable
-
   GetTopicScoreFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -110,7 +93,7 @@ Resources:
       Handler: lambda-handlers/get-topic.getAllTopicScoresHandler
       Runtime: nodejs12.x
       Events:
-        CalculateNeutralityApi:
+        GetTopicScoreApi:
           Type: Api
           Properties:
             Path: /topics
@@ -118,7 +101,6 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TopicScoreTable
-
   GetSuggestedTopicsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -126,14 +108,14 @@ Resources:
       Handler: lambda-handlers/suggested-topic.handler
       Runtime: nodejs12.x
       Events:
-        CalculateNeutralityApi:
+        GetSuggestedTopicsApi:
           Type: Api
           Properties:
             Path: /suggested-topics
             Method: get
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref TopicScoreTable
+            TableName: !Ref SuggestedTopicTable
 
   NewsSourceTable:
     Type: AWS::DynamoDB::Table
@@ -142,7 +124,6 @@ Resources:
         Name: AWS::Include
         Parameters:
           Location: ./src/config/dynamo-schemas/news-sources.schema.json
-
   TopicScoreTable:
     Type: AWS::DynamoDB::Table
     Properties:
