@@ -4,6 +4,7 @@ import newsapiService, { NewsApiArticle } from "./news/newsapi.service";
 import sentimentAnalyzerService from "./sentiment-analyzer.service";
 import topicScoreRepository from "../repositories/topic-score.repository";
 import { expect } from "chai";
+import keyPhrasesService from "./key-phrases.service";
 
 describe("topic.service", () => {
   beforeEach(() => {
@@ -34,6 +35,14 @@ describe("topic.service", () => {
       sampleAnalyzedArticles: news.map(newsapiService.toOnlineNewsArticle),
     };
     sinon.stub(newsapiService, "getNews").returns(Promise.resolve(news));
+    sinon.stub(keyPhrasesService, "getKeyPhraseScores").returns(
+      Promise.resolve([
+        {
+          score: 1,
+          text: "huehue",
+        },
+      ])
+    );
     sinon
       .stub(sentimentAnalyzerService, "analyzeText")
       .onCall(0)

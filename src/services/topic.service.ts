@@ -6,6 +6,7 @@ import {
   TopicSuggestion,
   suggestedTopicsRepository,
 } from "../repositories/suggested-topics.repository";
+import keyPhrasesService from "./key-phrases.service";
 
 export type GetTopicResult = {
   score: number | null;
@@ -25,13 +26,32 @@ async function getTopicScore(
     sortBy: "publishedAt",
   });
   const newsArr = newsApiResult.map(newsApiService.toOnlineNewsArticle);
-  const newsScores = await Promise.all(
-    newsArr.map((news) =>
+  const keyPhrasesScoreForNews = await Promise.all(
+    newsArr.map(async (news) => ({
+      news,
+      keyPhraseScore: await keyPhrasesService.getKeyPhraseScores(
+        news.content || news.title
+      ),
+    }))
+  );
+  const cleanedTopic = topic.toLowerCase().replace(/["']+/g, "");
+  const filteredNewsArr = keyPhrasesScoreForNews
+    .filter((e) => {
+      return e.keyPhraseScore.some((keyPhrase) => {
+        return (
+          keyPhrase.text.toLowerCase().includes(cleanedTopic.toLowerCase()) &&
+          keyPhrase.score > 0.85
+        );
+      });
+    })
+    .map((e) => e.news);
+  const newsScores: Array<number> = await Promise.all(
+    filteredNewsArr.map(async (news) =>
       sentimentAnalyzerService.analyzeText(news.title || news.content)
     )
   );
   const firstScore = newsScores.pop();
-  const sampleAnalyzedArticles = newsArr;
+  const sampleAnalyzedArticles = filteredNewsArr;
   if (firstScore === undefined) {
     return {
       score: null,
